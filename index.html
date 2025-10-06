@@ -1,4 +1,3 @@
-<!-- ========================== PARTE 1/3 — INÍCIO ========================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -58,7 +57,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
 .kpi{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .pill{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(6,18,36,.55);font-size:12px}
 
-/* -------- Login bonito (ajustado conforme pedido) -------- */
+/* -------- Login bonito (inputs em coluna e sem observações) -------- */
 #pageLogin{position:relative;overflow:hidden;min-height:calc(100vh - 64px);display:grid;place-items:center;padding:38px}
 .login-wrap{position:relative;width:min(820px,92%);padding:28px;border-radius:24px;background:rgba(7,15,30,.62);border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px rgba(0,0,0,.55);backdrop-filter: blur(16px)}
 .login-head{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px}
@@ -93,7 +92,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
 </header>
 
 <main>
-  <!-- LOGIN (inputs em coluna e sem observações embaixo) -->
+  <!-- LOGIN -->
   <section id="pageLogin">
     <div class="blob one"></div><div class="blob two"></div><div class="blob three"></div>
     <div class="twinkle" id="twinkle"></div>
@@ -286,12 +285,10 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
     </div>
   </section>
 </main>
-<!-- ========================== PARTE 1/3 — FIM ========================== -->
-<!-- ========================== PARTE 2/3 — INÍCIO (JS: helpers + storage + Drive Sync + boot) ========================== -->
+
+<!-- ==================== JS — helpers, storage, Drive sync, UI ==================== -->
 <script>
-/* ============================================================================
-   🔧 HELPERS BÁSICOS
-   ============================================================================ */
+/* ===== Helpers ===== */
 const $ = (id)=>document.getElementById(id);
 const show = (id)=>$(id)?.classList.remove('hide');
 const hide = (id)=>$(id)?.classList.add('hide');
@@ -299,7 +296,7 @@ const esc = (s)=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>
 const csvEsc=(s)=>{const x=String(s??'');return /[",\n]/.test(x)?`"${x.replace(/"/g,'""')}"`:x};
 const num = (v)=>Number(v)||0;
 
-/* Efeito “estrelas” do login (somente visual) */
+/* Estrelinhas decorativas no login */
 (function(){ 
   const wrap = document.getElementById('twinkle'); 
   if(!wrap) return; 
@@ -310,14 +307,12 @@ const num = (v)=>Number(v)||0;
   wrap.innerHTML=h; 
 })();
 
-/* ============================================================================
-   🗃️ CHAVES / CONSTANTES GERAIS
-   ============================================================================ */
-const KEY_SESSION        = 'sis_session';
-const KEY_DATA           = 'sis_checklists';
-const KEY_USERS          = 'sis_users';
-const KEY_PROPS          = 'sis_propostas';
-const KEY_DIR_APPROVERS  = 'sis_dir_approvers';
+/* ===== Chaves ===== */
+const KEY_SESSION='sis_session';
+const KEY_DATA='sis_checklists';
+const KEY_USERS='sis_users';
+const KEY_PROPS='sis_propostas';
+const KEY_DIR_APPROVERS='sis_dir_approvers';
 
 const ROLES = {
   ADMIN:'ADMIN', COMERCIAL:'COMERCIAL', DIRETORIA:'DIRETORIA',
@@ -325,7 +320,7 @@ const ROLES = {
   PRODUCAO:'PRODUCAO', MARKETING:'MARKETING', GRAFICA:'GRAFICA', LOGISTICA:'LOGISTICA'
 };
 
-/* Sessão e reset total */
+/* Sessão */
 function getUser(){ try{return JSON.parse(localStorage.getItem(KEY_SESSION))}catch{return null} }
 function setUser(u){ localStorage.setItem(KEY_SESSION, JSON.stringify(u)) }
 function logout(){ localStorage.removeItem(KEY_SESSION); initUI(); }
@@ -338,10 +333,7 @@ function resetSession(){
   location.reload();
 }
 
-/* ============================================================================
-   👤 USUÁRIOS (SEMENTE) + GET/SET
-   - Mantém: admin, comercial, diretoria (genérico), diretoria1..4 e áreas.
-   ============================================================================ */
+/* ===== Usuários seed ===== */
 const SEED_USERS = [
   {name:'Administrador', username:'admin',      password:'123456', role:ROLES.ADMIN},
   {name:'Comercial',     username:'comercial',  password:'123',    role:ROLES.COMERCIAL},
@@ -358,26 +350,23 @@ const SEED_USERS = [
   {name:'Gráfica',       username:'grafica',    password:'123',    role:ROLES.GRAFICA},
   {name:'Logística',     username:'logistica',  password:'123',    role:ROLES.LOGISTICA},
 ];
-
 function seedUsers(arr){
-  const map = new Map(arr.map(u=>[u.username.toLowerCase(),u]));
+  const map=new Map(arr.map(u=>[u.username.toLowerCase(),u]));
   SEED_USERS.forEach(s=>{ if(!map.has(s.username.toLowerCase())) arr.push(s); });
   localStorage.setItem(KEY_USERS, JSON.stringify(arr));
   return arr;
 }
 function getUsers(){
   try{
-    const raw = localStorage.getItem(KEY_USERS);
-    if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) return seedUsers(arr); }
+    const raw=localStorage.getItem(KEY_USERS);
+    if(raw){ const arr=JSON.parse(raw); if(Array.isArray(arr)) return seedUsers(arr); }
   }catch{}
   localStorage.setItem(KEY_USERS, JSON.stringify(SEED_USERS));
   return JSON.parse(localStorage.getItem(KEY_USERS));
 }
 function setUsers(list){ localStorage.setItem(KEY_USERS, JSON.stringify(list)) }
 
-/* ============================================================================
-   👨‍⚖️ APROVADORES (Diretoria) — nome + PIN pessoal
-   ============================================================================ */
+/* ===== Aprovadores (Diretoria) ===== */
 const SEED_APPROVERS = [
   {name:'Diretor A', pin:'7410'},
   {name:'Diretor B', pin:'8520'},
@@ -394,10 +383,7 @@ function getApprovers(){
 }
 function setApprovers(list){ localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(list)) }
 
-/* ============================================================================
-   📋 CHECKLISTS — estrutura mínima + GET/SET
-   (linhas/itens completos serão renderizados na PARTE 3)
-   ============================================================================ */
+/* ===== Checklists ===== */
 const row = (item,desc='') => ({
   item, desc,
   antigo:0, novo:0, enviar:0, sobra:0,
@@ -421,30 +407,14 @@ function getData(){
 }
 function setData(o){ localStorage.setItem(KEY_DATA, JSON.stringify(o)) }
 
-/* ============================================================================
-   📝 PROPOSTAS (Comercial) — GET/SET
-   ============================================================================ */
+/* ===== Propostas ===== */
 function getProps(){ try{const p=JSON.parse(localStorage.getItem(KEY_PROPS)); return Array.isArray(p)?p:[]}catch{return[]} }
 function setProps(a){ localStorage.setItem(KEY_PROPS, JSON.stringify(a)) }
 
-/* ============================================================================
-   ☁️ DRIVE SYNC — Usa seu Apps Script como “fonte de verdade”
-   - Puxa do Drive ao carregar
-   - Envia pro Drive automaticamente (debounce) quando algo muda
-   ============================================================================ */
-
-/* 1) URL do seu Apps Script Web App (AJUSTE AQUI se mudou) */
+/* ===== Drive Sync (Apps Script) ===== */
 const SIS_API_URL = "https://script.google.com/macros/s/AKfycbzmQkU1l5p1taS93eouEmX0Qdm627g7PHwpdLw1lOevmWOKhrPuY6WOXYi9Kxchpp6y2w/exec";
+const CLOUD_DOCS = { users:'users', checklists:'checklists', propostas:'propostas', approvers:'approvers' };
 
-/* 2) Identificadores dos "documentos" no Drive */
-const CLOUD_DOCS = {
-  users:      'users',
-  checklists: 'checklists',
-  propostas:  'propostas',
-  approvers:  'approvers',
-};
-
-/* 3) Cliente simples para GET/POST */
 async function driveGet(docId) {
   const url = `${SIS_API_URL}?docId=${encodeURIComponent(docId)}`;
   const r = await fetch(url, { method: 'GET' });
@@ -464,8 +434,6 @@ async function drivePost(docId, data) {
   if (j.ok !== true) throw new Error(j.error || 'Erro POST');
   return true;
 }
-
-/* 4) Puxar tudo do Drive antes de abrir a UI */
 async function pullAllFromDrive() {
   try {
     const [u, d, p, a] = await Promise.all([
@@ -481,7 +449,6 @@ async function pullAllFromDrive() {
     console.log('✅ Puxou do Drive com sucesso');
   } catch (e) {
     console.warn('⚠️ Não conseguiu puxar do Drive. Usando cache local.', e);
-    // segue com o que existir local
     if(!localStorage.getItem(KEY_USERS))         localStorage.setItem(KEY_USERS, JSON.stringify(SEED_USERS));
     if(!localStorage.getItem(KEY_DIR_APPROVERS)) localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(SEED_APPROVERS));
     if(!localStorage.getItem(KEY_DATA))          localStorage.setItem(KEY_DATA, JSON.stringify(DEFAULT_DATA));
@@ -489,7 +456,7 @@ async function pullAllFromDrive() {
   }
 }
 
-/* 5) Enviar automaticamente ao Drive (debounce) sempre que set* for chamado */
+/* Debounce envio automático */
 let _debounceTimer = null;
 function _debounce(fn, wait = 1500) { clearTimeout(_debounceTimer); _debounceTimer = setTimeout(fn, wait); }
 function _safeParseGet(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
@@ -528,22 +495,32 @@ setApprovers = function(arr){
   });
 };
 
-/* ============================================================================
-   🚀 BOOT — Corrige travamento no login:
-   - Primeiro tenta puxar do Drive;
-   - Depois chama initUI() (definida na PARTE 3).
-   ============================================================================ */
+/* ===== Boot robusto com timeout & fallback ===== */
 document.addEventListener('DOMContentLoaded', async () => {
-  try { await pullAllFromDrive(); } catch(e){ console.warn('pullAllFromDrive falhou', e); }
-  if (typeof initUI === 'function') { initUI(); }
+  let inited = false;
+  function safeInit() {
+    if (!inited && typeof initUI === 'function') {
+      inited = true;
+      try { initUI(); } catch(e){ console.error('initUI error:', e); }
+    }
+  }
+  const fallbackTimer = setTimeout(() => {
+    console.warn('Fallback: iniciando sem sincronizar Drive');
+    safeInit();
+  }, 2200);
+  try {
+    const pull = pullAllFromDrive();
+    const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error('timeout pullAllFromDrive')), 2000));
+    await Promise.race([pull, timeout]);
+  } catch (e) {
+    console.warn('pullAllFromDrive falhou/timeout:', e);
+  } finally {
+    clearTimeout(fallbackTimer);
+    safeInit();
+  }
 });
-</script>
-<!-- ========================== PARTE 2/3 — FIM ========================== -->
-<!-- ========================== PARTE 3/3 — INÍCIO (JS: UI principal) ========================== -->
-<script>
-/* ============================================================================
-   🚪 LOGIN / INIT
-   ============================================================================ */
+
+/* ===== Login & Init UI ===== */
 function doLogin(ev){
   ev.preventDefault();
   const u = $("inUser").value.trim().toLowerCase();
@@ -555,7 +532,6 @@ function doLogin(ev){
   initUI();
   return false;
 }
-
 function initUI(){
   const u = getUser();
   hide("pageLogin"); hide("pageAdmin"); hide("pageComercial");
@@ -572,24 +548,35 @@ function initUI(){
     case ROLES.ADMIN:      show("pageAdmin"); renderAdmin(); break;
     case ROLES.COMERCIAL:  show("pageComercial"); renderComercial(); break;
     case ROLES.DIRETORIA:  show("pageDiretoria"); renderDiretoria(); break;
-    default:                show("pageArea"); renderArea(u.role); break;
+    default:               show("pageArea"); renderArea(u.role); break;
   }
 }
 
-/* ============================================================================
-   🧭 ADMIN
-   ============================================================================ */
+/* ===== Admin ===== */
 function renderAdmin(){
   const roles = Object.values(ROLES);
   const sel = $("accRole");
   sel.innerHTML = roles.map(r=>`<option value="${r}">${r}</option>`).join("");
   renderUserList();
+  // Tabs
+  const container=$('adminTabs');
+  container.querySelectorAll('.tab').forEach(btn=>{
+    btn.onclick=()=>{
+      container.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      hide('panel-dash'); hide('panel-area'); hide('panel-access');
+      if(btn.dataset.tab==='dash'){ show('panel-dash'); renderDashboard(); }
+      if(btn.dataset.tab==='area'){ show('panel-area'); fillAreaSelect(); renderAdminAreaView($('areaSelect').value); }
+      if(btn.dataset.tab==='access'){ show('panel-access'); }
+    };
+  });
+  renderDashboard();
 }
 function renderUserList(){
   const u = getUsers();
-  const html = u.map(x=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:4px 0">
-    <span><b>${x.name}</b> (${x.username}) — ${x.role}</span></div>`).join("");
-  $("userList").innerHTML = html;
+  $("userList").innerHTML = u.map(x=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:4px 0">
+    <span><b>${esc(x.name)}</b> (<code>${esc(x.username)}</code>) — ${x.role}</span>
+  </div>`).join("");
 }
 function createAccess(){
   const name=$("accName").value.trim();
@@ -602,12 +589,162 @@ function createAccess(){
   u.push({name,username,password:pass,role});
   setUsers(u);
   alert("Usuário criado!");
+  $("accName").value=$("accUser").value=$("accPass").value="";
   renderUserList();
 }
 
-/* ============================================================================
-   💼 COMERCIAL — Enviar proposta / visualizar propostas
-   ============================================================================ */
+/* ===== Dashboard ===== */
+function progressOf(area){
+  const data=getData()[area]||[]; const total=data.length||1;
+  const done=data.filter(r=>r.apIda || r.apVolta).length;
+  return {pct:Math.round(100*done/total), done, total};
+}
+function renderDashboard(){
+  const areas=Object.values(ROLES).filter(r=>![ROLES.ADMIN,ROLES.DIRETORIA,ROLES.COMERCIAL].includes(r));
+  $("dashCards").innerHTML = areas.map(a=>{
+    const p=progressOf(a);
+    return `<div class="card" style="min-width:280px">
+      <div class="row" style="gap:16px;align-items:center">
+        <div class="progress" style="width:120px;height:12px"><div class="bar" style="width:${p.pct}%"></div></div>
+        <div>
+          <div style="font-weight:900">${a}</div>
+          <div class="row"><span class="pill">Concl.: ${p.done}</span><span class="pill">Pend.: ${p.total-p.done}</span></div>
+        </div>
+        <div class="pill">${p.pct}%</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ===== Admin > Área ===== */
+function fillAreaSelect(){
+  const sel=$("areaSelect");
+  sel.innerHTML = Object.values(ROLES)
+    .filter(r=>![ROLES.ADMIN,ROLES.DIRETORIA,ROLES.COMERCIAL].includes(r))
+    .map(r=>`<option>${r}</option>`).join('');
+  sel.onchange=()=>renderAdminAreaView(sel.value);
+}
+function renderAdminAreaView(area){ renderAreaTable(area,'areaWrap',true); }
+
+/* ===== Checklists (render/editar) ===== */
+function renderArea(role){
+  $("areaTitle").textContent = `Checklist — ${role}`;
+  renderAreaTable(role,'areaTable',false);
+}
+function renderAreaTable(area, targetId, adminView=false){
+  const db=getData(); const items=db[area]||[];
+  const p=progressOf(area); const target=$(targetId);
+  const header=`<div class="row" style="justify-content:space-between;margin-bottom:8px">
+    <div class="kpi"><strong>${area}</strong><span>${p.pct}%</span></div>
+    <div style="min-width:220px" class="progress"><div class="bar" style="width:${p.pct}%"></div></div>
+  </div>`;
+  const tools = adminView?`
+    <div class="row" style="justify-content:flex-end;margin-bottom:8px">
+      <button class="btn xs ok" onclick="markAll(true,'${area}')">Marcar todos</button>
+      <button class="btn xs ghost" onclick="markAll(false,'${area}')">Desmarcar</button>
+      <button class="btn xs" onclick="saveChecks()">Salvar</button>
+      <button class="btn xs ghost" onclick="downloadCSV('${area}')">Exportar CSV</button>
+    </div>`:'';
+  const table=`
+  <div style="overflow:auto">
+    <table>
+      <thead>
+        <tr>
+          <th style="min-width:220px">ITEM</th>
+          <th style="min-width:200px">DESCRIÇÃO</th>
+          <th colspan="4" style="text-align:center">IDA</th>
+          <th colspan="2" style="text-align:center">VOLTA</th>
+          <th style="min-width:160px">AP.</th>
+        </tr>
+        <tr>
+          <th></th><th></th>
+          <th>ANTIGO</th><th>NOVO</th><th>ENVIAR</th><th>SOBRA</th>
+          <th>VOLTOU</th><th>FALTOU</th>
+          <th>Ida / Volta</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${items.map((r,i)=>`
+          <tr>
+            <td>${esc(r.item)}</td>
+            <td><input data-k="desc" data-i="${i}" value="${esc(r.desc||'')}" oninput="editRow(this,'${area}')"></td>
+
+            <td><input type="number" min="0" data-k="antigo" data-i="${i}" value="${num(r.antigo)}" oninput="editRow(this,'${area}')"></td>
+            <td><input type="number" min="0" data-k="novo"   data-i="${i}" value="${num(r.novo)}"   oninput="editRow(this,'${area}')"></td>
+            <td style="text-align:center"><strong>${num(r.enviar)}</strong></td>
+            <td style="text-align:center"><strong>${num(r.sobra)}</strong></td>
+
+            <td><input type="number" min="0" data-k="voltou" data-i="${i}" value="${num(r.voltou)}" oninput="editRow(this,'${area}')"></td>
+            <td style="text-align:center"><strong>${num(r.faltou)}</strong></td>
+
+            <td>
+              <label class="pill" style="display:inline-flex;gap:6px;align-items:center">
+                <input type="checkbox" ${r.apIda?'checked':''} onchange="setAp('${area}',${i},'ida',this)"> Ida
+              </label>
+              <label class="pill" style="display:inline-flex;gap:6px;align-items:center">
+                <input type="checkbox" ${r.apVolta?'checked':''} onchange="setAp('${area}',${i},'volta',this)"> Volta
+              </label>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>`;
+  target.innerHTML = header + tools + table;
+}
+function editRow(el,area){
+  const i=+el.dataset.i, k=el.dataset.k;
+  const v=(el.type==='number')?Math.max(0,Number(el.value||0)):el.value;
+  const db=getData(); const r=db[area][i];
+  r[k]=v;
+  r.enviar=Math.max(0, num(r.novo)-num(r.antigo));
+  r.sobra =Math.max(0, num(r.antigo)-num(r.novo));
+  r.faltou=Math.max(0, num(r.enviar)-num(r.voltou));
+  setData(db);
+  if($('areaTable')) renderAreaTable(area,'areaTable');
+  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
+  renderDashboard();
+}
+function setAp(area,i,which,el){
+  const db=getData(); const r=db[area][i];
+  if(which==='ida')  r.apIda   = el.checked;
+  if(which==='volta')r.apVolta = el.checked;
+  setData(db);
+  if($('areaTable')) renderAreaTable(area,'areaTable');
+  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
+  renderDashboard();
+}
+function markAll(val,areaOpt){
+  const area=areaOpt || (getUser()?.role);
+  const db=getData(); (db[area]||[]).forEach(r=>{r.apIda=!!val; r.apVolta=val? r.apVolta : false;});
+  setData(db);
+  if($('areaTable')) renderAreaTable(area,'areaTable');
+  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
+  renderDashboard();
+}
+function saveChecks(){ alert('Checklist salvo!'); }
+
+/* ===== CSV ===== */
+function toCSV(rows){
+  const head=['ITEM','DESCRICAO','ANTIGO','NOVO','ENVIAR','SOBRA','VOLTOU','FALTOU','AP_IDA','AP_VOLTA'];
+  const lines=rows.map(r=>[
+    csvEsc(r.item), csvEsc(r.desc||''), num(r.antigo), num(r.novo), num(r.enviar), num(r.sobra),
+    num(r.voltou), num(r.faltou), r.apIda?1:0, r.apVolta?1:0
+  ].join(','));
+  return head.join(',')+'\n'+lines.join('\n');
+}
+function downloadCSV(area){
+  const db=getData(); const rows=db[area]||[];
+  const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`checklist_${area.toLowerCase()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+}
+function exportAreaCSV(){ const area=$('areaSelect').value; downloadCSV(area); }
+function exportMyCSV(){ const u=getUser(); if(!u) return; downloadCSV(u.role); }
+
+/* ===== Comercial — Propostas ===== */
 function enviarProposta(){
   const campos = [
     "pIni","pVend","pShop","pTotalLojas","pCRM","pVagas","pAdm","pRank","pExec","pTel","pEnd",
@@ -615,10 +752,8 @@ function enviarProposta(){
     "pPracaProp","pQtdPracas","pConc","pBilheteConc","pTemaAnt","pRefParque","pPeriodo","pAluguel",
     "pFaturamento","pCP1","pCP2","pCP3","pCP4","pConsider","pExig","pCond","pGold","pComissao"
   ];
-  const data = {};
-  campos.forEach(id => data[id] = $(id).value);
-  const arr = getProps();
-  const user = getUser();
+  const data = {}; campos.forEach(id => data[id] = $(id).value);
+  const arr = getProps(); const user = getUser();
   arr.push({
     id: Date.now(),
     criadoPor: user?.name,
@@ -632,7 +767,6 @@ function enviarProposta(){
   campos.forEach(id=>$(id).value="");
   renderMyPropostas();
 }
-
 function renderComercial(){
   const tabs = document.querySelectorAll("#pageComercial .tab");
   tabs.forEach(btn=>{
@@ -647,10 +781,8 @@ function renderComercial(){
   });
   renderMyPropostas();
 }
-
 function renderMyPropostas(){
-  const arr=getProps();
-  const user=getUser();
+  const arr=getProps(); const user=getUser();
   const my=arr.filter(p=>p.criadoPor===user?.name);
   if(!my.length){ $("myPropsWrap").innerHTML="<p>Nenhuma proposta enviada.</p>"; return; }
   $("myPropsWrap").innerHTML=my.map(p=>`
@@ -662,31 +794,26 @@ function renderMyPropostas(){
   `).join("");
 }
 
-/* ============================================================================
-   🏛️ DIRETORIA — Visualiza e aprova propostas (sem editar)
-   ============================================================================ */
+/* ===== Diretoria — Visualizar + Aprovar/Negar (PIN) ===== */
 function renderDiretoria(){
   const arr=getProps();
   const wrap=$("dirPropsWrap");
+  $("dirPropDetail").innerHTML="";
   if(!arr.length){ wrap.innerHTML="<p>Sem propostas enviadas.</p>"; return; }
   wrap.innerHTML=arr.map(p=>`
     <div class="card" style="margin-bottom:10px">
-      <b>${esc(p.dados.pShop)}</b><br>
+      <b>${esc(p.dados.pShop || 'Sem nome')}</b><br>
       <small>${p.status}${p.aprovadoPor?` — ${p.aprovadoPor}`:""}</small><br>
       <button class="btn sm" onclick="verProposta(${p.id})">Ver Detalhes</button>
     </div>
   `).join("");
 }
-
 function verProposta(id){
-  const arr=getProps();
-  const p=arr.find(x=>x.id===id);
-  if(!p) return;
-  let html=`<h3>${esc(p.dados.pShop||"Sem nome")}</h3>`;
-  html+="<table>";
-  for(const [k,v] of Object.entries(p.dados)){ html+=`<tr><td>${k}</td><td>${esc(v)}</td></tr>`; }
-  html+="</table>";
-  html+=`
+  const arr=getProps(); const p=arr.find(x=>x.id===id); if(!p) return;
+  const d=p.dados;
+  let html=`<div class="card"><h3>Proposta #${id} — ${esc(d.pShop||d.pShop||'')}</h3><div style="overflow:auto;"><table>`;
+  for(const [k,v] of Object.entries(d)){ html+=`<tr><th style="text-align:left">${esc(k)}</th><td>${esc(v)}</td></tr>`; }
+  html+=`</table></div>
     <p><b>Status:</b> ${p.status}</p>
     <p><b>Aprovado por:</b> ${esc(p.aprovadoPor||"-")}</p>
     <p><b>Observação:</b> ${esc(p.observacao||"-")}</p>
@@ -694,22 +821,17 @@ function verProposta(id){
       <button class="btn ok" onclick="aprovar(${id})">Aprovar</button>
       <button class="btn danger" onclick="negar(${id})">Negar</button>
       <button class="btn ghost" onclick="renderDiretoria()">Voltar</button>
-    </div>`;
+    </div></div>`;
   $("dirPropDetail").innerHTML=html;
   $("dirPropsWrap").innerHTML="";
 }
-
 function aprovar(id){
   const pin=prompt("Digite seu PIN de aprovação:");
   if(!pin) return;
-  const aprovs=getApprovers();
-  const dir=aprovs.find(a=>a.pin===pin);
+  const aprovs=getApprovers(); const dir=aprovs.find(a=>a.pin===pin);
   if(!dir){ alert("PIN inválido."); return; }
-  const arr=getProps();
-  const p=arr.find(x=>x.id===id);
-  p.status="Aprovado";
-  p.aprovadoPor=dir.name;
-  p.observacao="";
+  const arr=getProps(); const p=arr.find(x=>x.id===id);
+  p.status="Aprovado"; p.aprovadoPor=dir.name; p.observacao="";
   setProps(arr);
   alert("Proposta aprovada!");
   renderDiretoria();
@@ -717,63 +839,52 @@ function aprovar(id){
 function negar(id){
   const pin=prompt("PIN do diretor:");
   if(!pin) return;
-  const aprovs=getApprovers();
-  const dir=aprovs.find(a=>a.pin===pin);
+  const aprovs=getApprovers(); const dir=aprovs.find(a=>a.pin===pin);
   if(!dir){ alert("PIN inválido."); return; }
   const obs=prompt("Motivo da negativa:");
-  const arr=getProps();
-  const p=arr.find(x=>x.id===id);
-  p.status="Negado";
-  p.aprovadoPor=dir.name;
-  p.observacao=obs||"";
+  const arr=getProps(); const p=arr.find(x=>x.id===id);
+  p.status="Negado"; p.aprovadoPor=dir.name; p.observacao=obs||"";
   setProps(arr);
   alert("Proposta negada.");
   renderDiretoria();
 }
 
-/* ============================================================================
-   🧾 CHECKLIST (Áreas)
-   ============================================================================ */
-function renderArea(role){
-  $("areaTitle").textContent = `Checklist — ${role}`;
-  const data=getData();
-  const arr=data[role]||[];
-  if(!arr.length){ $("areaTable").innerHTML="<p>Sem itens.</p>"; return; }
-  $("areaTable").innerHTML=`
-  <table>
-    <thead><tr><th>Item</th><th>Antigo</th><th>Novo</th><th>Enviar</th><th>Sobra</th><th>Voltou</th><th>Faltou</th></tr></thead>
-    <tbody>
-      ${arr.map((r,i)=>`
-        <tr>
-          <td>${esc(r.item)}</td>
-          <td><input type="number" value="${r.antigo}" onchange="updVal('${role}',${i},'antigo',this.value)"></td>
-          <td><input type="number" value="${r.novo}" onchange="updVal('${role}',${i},'novo',this.value)"></td>
-          <td><input type="number" value="${r.enviar}" onchange="updVal('${role}',${i},'enviar',this.value)"></td>
-          <td><input type="number" value="${r.sobra}" onchange="updVal('${role}',${i},'sobra',this.value)"></td>
-          <td><input type="number" value="${r.voltou}" onchange="updVal('${role}',${i},'voltou',this.value)"></td>
-          <td><input type="number" value="${r.faltou}" onchange="updVal('${role}',${i},'faltou',this.value)"></td>
-        </tr>`).join("")}
-    </tbody>
-  </table>`;
+/* ===== CSV helpers ===== */
+function toCSV(rows){
+  const head=['ITEM','DESCRICAO','ANTIGO','NOVO','ENVIAR','SOBRA','VOLTOU','FALTOU','AP_IDA','AP_VOLTA'];
+  const lines=rows.map(r=>[
+    csvEsc(r.item), csvEsc(r.desc||''), num(r.antigo), num(r.novo), num(r.enviar), num(r.sobra),
+    num(r.voltou), num(r.faltou), r.apIda?1:0, r.apVolta?1:0
+  ].join(','));
+  return head.join(',')+'\n'+lines.join('\n');
 }
-function updVal(role,idx,key,val){
-  const d=getData(); if(!d[role]) return;
-  d[role][idx][key]=num(val);
-  setData(d);
-}
-function markAll(v){
-  const u=getUser(); const d=getData(); if(!u||!d[u.role]) return;
-  d[u.role].forEach(r=>r.apIda=v);
-  setData(d); renderArea(u.role);
-}
-function saveChecks(){
-  alert("Checklist salvo!");
+function exportAreaCSV(){ const area=$('areaSelect').value; downloadCSV(area); }
+function exportMyCSV(){ const u=getUser(); if(!u) return; downloadCSV(u.role); }
+function downloadCSV(area){
+  const db=getData(); const rows=db[area]||[];
+  const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=`checklist_${area.toLowerCase()}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
 }
 
-/* ============================================================================
-   ✅ FINALIZAÇÃO
-   ============================================================================ */
-console.log("SIS carregado com sucesso.");
+/* ===== Força exibir login se algo travar ===== */
+setTimeout(() => {
+  try {
+    const hasSession = !!localStorage.getItem('sis_session');
+    const loginHidden = document.getElementById('pageLogin')?.classList.contains('hide');
+    const somePageVisible = ['pageAdmin','pageComercial','pageDiretoria','pageArea']
+      .some(id => !document.getElementById(id)?.classList.contains('hide'));
+    if (!hasSession && (loginHidden || !somePageVisible)) {
+      ['pageAdmin','pageComercial','pageDiretoria','pageArea'].forEach(id=>document.getElementById(id)?.classList.add('hide'));
+      document.getElementById('pageLogin')?.classList.remove('hide');
+    }
+  } catch(e){ console.warn('force-login error', e); }
+}, 3000);
+
+window.addEventListener('error', (ev)=>{
+  console.error('JS error:', ev.message, ev.error);
+});
 </script>
-<!-- ========================== PARTE 3/3 — FIM ========================== -->
 </html>
