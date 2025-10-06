@@ -1,14 +1,11 @@
+<!-- ========================== PARTE 1/3 — INÍCIO ========================== -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>SIS — Sistema Interno Safári</title>
-
 <style>
-/* =========================================================
-   PARTE 1 — ESTILOS (layout e tema)
-   ========================================================= */
 :root{
   --bg-1:#060a18; --bg-2:#0b1430; --bg-3:#0a1024; --panel:#0d1734cc;
   --ink:#f2f6fb; --muted:#a9b5cc; --line:#1d2a49;
@@ -61,7 +58,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
 .kpi{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .pill{padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(6,18,36,.55);font-size:12px}
 
-/* Login com blobs e estrelas */
+/* -------- Login bonito (ajustado conforme pedido) -------- */
 #pageLogin{position:relative;overflow:hidden;min-height:calc(100vh - 64px);display:grid;place-items:center;padding:38px}
 .login-wrap{position:relative;width:min(820px,92%);padding:28px;border-radius:24px;background:rgba(7,15,30,.62);border:1px solid rgba(255,255,255,.08);box-shadow:0 30px 80px rgba(0,0,0,.55);backdrop-filter: blur(16px)}
 .login-head{display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:14px}
@@ -82,8 +79,8 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
 @keyframes twinkle{0%{opacity:0}10%{opacity:1}50%{opacity:.2}90%{opacity:1}100%{opacity:0}}
 </style>
 </head>
-
 <body>
+
 <header class="topbar">
   <div class="brand">
     <img src="logo.png" class="logo" onerror="this.style.display='none'">
@@ -96,9 +93,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
 </header>
 
 <main>
-  <!-- =========================================================
-       LOGIN
-       ========================================================= -->
+  <!-- LOGIN (inputs em coluna e sem observações embaixo) -->
   <section id="pageLogin">
     <div class="blob one"></div><div class="blob two"></div><div class="blob three"></div>
     <div class="twinkle" id="twinkle"></div>
@@ -109,27 +104,28 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
         <div class="title-sis">SIS</div>
         <div class="subtitle">Sistema Interno Safári</div>
       </div>
-      <form class="grid-2" onsubmit="return doLogin(event)">
-        <div class="field"><label>Usuário</label><input id="inUser" placeholder="ex.: admin, comercial, diretoria1…" required></div>
-        <div class="field"><label>Senha</label><input id="inPass" type="password" placeholder="123 ou 123456" required></div>
-        <div class="row" style="grid-column:1/-1;justify-content:space-between">
-          <div class="row" style="gap:8px">
-            <button class="btn" type="submit">Entrar</button>
-            <button class="btn ghost" type="button" onclick="resetSession()">Resetar sessão</button>
-          </div>
-          <span class="muted s">
-            Admin: <code>admin/123456</code> • Comercial: <code>comercial/123</code> • Diretoria: <code>diretoria/0000</code><br>
-            Setores: <code>projetos</code>, <code>estoque</code>, <code>fabricacao</code>, <code>producao</code>, <code>marketing</code>, <code>grafica</code>, <code>logistica</code> (senha <code>123</code>)
-          </span>
+
+      <!-- inputs empilhados -->
+      <form class="grid-2" onsubmit="return doLogin(event)" style="grid-template-columns:1fr">
+        <div class="field">
+          <label>Usuário</label>
+          <input id="inUser" placeholder="ex.: admin, comercial, diretoria…" required>
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input id="inPass" type="password" placeholder="•••••" required>
+        </div>
+        <div class="row" style="justify-content:space-between">
+          <button class="btn" type="submit">Entrar</button>
+          <button class="btn ghost" type="button" onclick="resetSession()">Resetar sessão</button>
         </div>
       </form>
+
       <div class="signature">Desenvolvido por <b>Gustavo Morino</b> e <b>Felipe Forato</b></div>
     </div>
   </section>
 
-  <!-- =========================================================
-       ADMIN
-       ========================================================= -->
+  <!-- ADMIN -->
   <section id="pageAdmin" class="container hide">
     <div class="tabs" id="adminTabs">
       <button class="tab active" data-tab="dash">Dashboard</button>
@@ -172,9 +168,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
     </div>
   </section>
 
-  <!-- =========================================================
-       DIRETORIA (Propostas)
-       ========================================================= -->
+  <!-- DIRETORIA (Propostas) -->
   <section id="pageDiretoria" class="container hide">
     <div class="card">
       <h2 style="margin:6px 0 12px">Propostas — Aprovação</h2>
@@ -183,9 +177,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
     </div>
   </section>
 
-  <!-- =========================================================
-       COMERCIAL
-       ========================================================= -->
+  <!-- COMERCIAL -->
   <section id="pageComercial" class="container hide">
     <div class="tabs">
       <button class="tab active" data-tab="prop-new">Abrir Proposta</button>
@@ -263,7 +255,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
         <div class="row" style="justify-content:flex-end;margin-top:10px">
           <button class="btn" onclick="enviarProposta()">Enviar para Diretoria</button>
         </div>
-        <p class="muted s">A Diretoria verá a proposta e poderá aprovar/negar com PIN e observação.</p>
+        <p class="muted s">A Diretoria verá a proposta e poderá aprovar/negar com senha e observação.</p>
       </div>
     </div>
 
@@ -275,9 +267,7 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
     </div>
   </section>
 
-  <!-- =========================================================
-       ÁREA (Checklists)
-       ========================================================= -->
+  <!-- ÁREA (checklists) -->
   <section id="pageArea" class="container hide">
     <div class="card">
       <div class="row" style="justify-content:space-between">
@@ -296,13 +286,12 @@ td input[type="number"]:focus,td input[type="text"]:focus{border-color:rgba(92,2
     </div>
   </section>
 </main>
-
+<!-- ========================== PARTE 1/3 — FIM ========================== -->
+<!-- ========================== PARTE 2/3 — INÍCIO (JS: helpers + storage + Drive Sync + boot) ========================== -->
 <script>
-/* =========================================================
-   PARTE 2 — APLICAÇÃO (login, checklists, propostas)
-   ========================================================= */
-
-/* Helpers UI */
+/* ============================================================================
+   🔧 HELPERS BÁSICOS
+   ============================================================================ */
 const $ = (id)=>document.getElementById(id);
 const show = (id)=>$(id)?.classList.remove('hide');
 const hide = (id)=>$(id)?.classList.add('hide');
@@ -310,24 +299,33 @@ const esc = (s)=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>
 const csvEsc=(s)=>{const x=String(s??'');return /[",\n]/.test(x)?`"${x.replace(/"/g,'""')}"`:x};
 const num = (v)=>Number(v)||0;
 
-/* Estrelinhas do login */
-(function(){ const wrap=$('twinkle'); if(!wrap) return; let h=''; for(let i=0;i<80;i++){h+=`<span class="dot" style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${(2+Math.random()*3).toFixed(2)}s;animation-delay:${(Math.random()*3).toFixed(2)}s"></span>`} wrap.innerHTML=h; })();
+/* Efeito “estrelas” do login (somente visual) */
+(function(){ 
+  const wrap = document.getElementById('twinkle'); 
+  if(!wrap) return; 
+  let h=''; 
+  for(let i=0;i<80;i++){
+    h+=`<span class="dot" style="left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${(2+Math.random()*3).toFixed(2)}s;animation-delay:${(Math.random()*3).toFixed(2)}s"></span>`
+  } 
+  wrap.innerHTML=h; 
+})();
 
-/* Storage Keys */
-const KEY_SESSION='sis_session';
-const KEY_DATA='sis_checklists';
-const KEY_USERS='sis_users';
-const KEY_PROPS='sis_propostas';
-const KEY_DIR_APPROVERS='sis_dir_approvers';
+/* ============================================================================
+   🗃️ CHAVES / CONSTANTES GERAIS
+   ============================================================================ */
+const KEY_SESSION        = 'sis_session';
+const KEY_DATA           = 'sis_checklists';
+const KEY_USERS          = 'sis_users';
+const KEY_PROPS          = 'sis_propostas';
+const KEY_DIR_APPROVERS  = 'sis_dir_approvers';
 
-/* Perfis */
 const ROLES = {
   ADMIN:'ADMIN', COMERCIAL:'COMERCIAL', DIRETORIA:'DIRETORIA',
   PROJETOS:'PROJETOS', ESTOQUE:'ESTOQUE', FABRICACAO:'FABRICACAO',
   PRODUCAO:'PRODUCAO', MARKETING:'MARKETING', GRAFICA:'GRAFICA', LOGISTICA:'LOGISTICA'
 };
 
-/* Sessão */
+/* Sessão e reset total */
 function getUser(){ try{return JSON.parse(localStorage.getItem(KEY_SESSION))}catch{return null} }
 function setUser(u){ localStorage.setItem(KEY_SESSION, JSON.stringify(u)) }
 function logout(){ localStorage.removeItem(KEY_SESSION); initUI(); }
@@ -340,36 +338,46 @@ function resetSession(){
   location.reload();
 }
 
-/* Usuários seed */
+/* ============================================================================
+   👤 USUÁRIOS (SEMENTE) + GET/SET
+   - Mantém: admin, comercial, diretoria (genérico), diretoria1..4 e áreas.
+   ============================================================================ */
 const SEED_USERS = [
-  {name:'Administrador', username:'admin', password:'123456', role:ROLES.ADMIN},
-  {name:'Comercial', username:'comercial', password:'123', role:ROLES.COMERCIAL},
-  {name:'Diretoria', username:'diretoria', password:'0000', role:ROLES.DIRETORIA},
-  {name:'Projetos', username:'projetos', password:'123', role:ROLES.PROJETOS},
-  {name:'Estoque', username:'estoque', password:'123', role:ROLES.ESTOQUE},
-  {name:'Fabricação', username:'fabricacao', password:'123', role:ROLES.FABRICACAO},
-  {name:'Produção', username:'producao', password:'123', role:ROLES.PRODUCAO},
-  {name:'Marketing', username:'marketing', password:'123', role:ROLES.MARKETING},
-  {name:'Gráfica', username:'grafica', password:'123', role:ROLES.GRAFICA},
-  {name:'Logística', username:'logistica', password:'123', role:ROLES.LOGISTICA},
+  {name:'Administrador', username:'admin',      password:'123456', role:ROLES.ADMIN},
+  {name:'Comercial',     username:'comercial',  password:'123',    role:ROLES.COMERCIAL},
+  {name:'Diretoria',     username:'diretoria',  password:'0000',   role:ROLES.DIRETORIA},
+  {name:'Diretoria 1',   username:'diretoria1', password:'7410',   role:ROLES.DIRETORIA},
+  {name:'Diretoria 2',   username:'diretoria2', password:'8520',   role:ROLES.DIRETORIA},
+  {name:'Diretoria 3',   username:'diretoria3', password:'9630',   role:ROLES.DIRETORIA},
+  {name:'Diretoria 4',   username:'diretoria4', password:'1590',   role:ROLES.DIRETORIA},
+  {name:'Projetos',      username:'projetos',   password:'123',    role:ROLES.PROJETOS},
+  {name:'Estoque',       username:'estoque',    password:'123',    role:ROLES.ESTOQUE},
+  {name:'Fabricação',    username:'fabricacao', password:'123',    role:ROLES.FABRICACAO},
+  {name:'Produção',      username:'producao',   password:'123',    role:ROLES.PRODUCAO},
+  {name:'Marketing',     username:'marketing',  password:'123',    role:ROLES.MARKETING},
+  {name:'Gráfica',       username:'grafica',    password:'123',    role:ROLES.GRAFICA},
+  {name:'Logística',     username:'logistica',  password:'123',    role:ROLES.LOGISTICA},
 ];
+
+function seedUsers(arr){
+  const map = new Map(arr.map(u=>[u.username.toLowerCase(),u]));
+  SEED_USERS.forEach(s=>{ if(!map.has(s.username.toLowerCase())) arr.push(s); });
+  localStorage.setItem(KEY_USERS, JSON.stringify(arr));
+  return arr;
+}
 function getUsers(){
   try{
-    const raw=localStorage.getItem(KEY_USERS);
-    if(raw){ const arr=JSON.parse(raw); if(Array.isArray(arr)) return seedUsers(arr); }
+    const raw = localStorage.getItem(KEY_USERS);
+    if(raw){ const arr = JSON.parse(raw); if(Array.isArray(arr)) return seedUsers(arr); }
   }catch{}
   localStorage.setItem(KEY_USERS, JSON.stringify(SEED_USERS));
   return JSON.parse(localStorage.getItem(KEY_USERS));
 }
 function setUsers(list){ localStorage.setItem(KEY_USERS, JSON.stringify(list)) }
-function seedUsers(arr){
-  const map=new Map(arr.map(u=>[u.username.toLowerCase(),u]));
-  SEED_USERS.forEach(s=>{ if(!map.has(s.username.toLowerCase())) arr.push(s); });
-  localStorage.setItem(KEY_USERS, JSON.stringify(arr));
-  return arr;
-}
 
-/* Diretores (aprovadores) — Nome + PIN pessoal */
+/* ============================================================================
+   👨‍⚖️ APROVADORES (Diretoria) — nome + PIN pessoal
+   ============================================================================ */
 const SEED_APPROVERS = [
   {name:'Diretor A', pin:'7410'},
   {name:'Diretor B', pin:'8520'},
@@ -386,7 +394,10 @@ function getApprovers(){
 }
 function setApprovers(list){ localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(list)) }
 
-/* Checklists — modelo */
+/* ============================================================================
+   📋 CHECKLISTS — estrutura mínima + GET/SET
+   (linhas/itens completos serão renderizados na PARTE 3)
+   ============================================================================ */
 const row = (item,desc='') => ({
   item, desc,
   antigo:0, novo:0, enviar:0, sobra:0,
@@ -394,13 +405,13 @@ const row = (item,desc='') => ({
   apIda:false, apVolta:false
 });
 const DEFAULT_DATA = {
-  [ROLES.PROJETOS]: [row('Briefing aprovado'), row('Planta 2D'), row('Modelagem 3D/Render'), row('Memorial descritivo'), row('Aprovação cliente')],
-  [ROLES.ESTOQUE]: [row('Mesinha'),row('Tampo mesinha'),row('Assento mesinha'),row('Cavalinhos'),row('Escorregadores')],
-  [ROLES.FABRICACAO]: [row('Módulo 1'),row('Módulo 2'),row('Personagem 01'),row('Cama elástica')],
-  [ROLES.PRODUCAO]: [row('Escada'),row('Travessa 1m'),row('Travessa 2m')],
-  [ROLES.MARKETING]: [row('Arte final'),row('Posts/divulgação')],
-  [ROLES.GRAFICA]: [row('Impressão'),row('Refile/laminação')],
-  [ROLES.LOGISTICA]: [row('Veículo definido'),row('Rota & janela de doca')],
+  [ROLES.PROJETOS]:   [row('Briefing aprovado'), row('Planta 2D'), row('Modelagem 3D/Render'), row('Memorial descritivo'), row('Aprovação cliente')],
+  [ROLES.ESTOQUE]:    [row('Mesinha'), row('Tampo mesinha'), row('Assento mesinha'), row('Cavalinhos'), row('Escorregadores')],
+  [ROLES.FABRICACAO]: [row('Módulo 1'), row('Módulo 2'), row('Personagem 01'), row('Cama elástica')],
+  [ROLES.PRODUCAO]:   [row('Escada'), row('Travessa 1m'), row('Travessa 2m')],
+  [ROLES.MARKETING]:  [row('Arte final'), row('Posts/divulgação')],
+  [ROLES.GRAFICA]:    [row('Impressão'), row('Refile/laminação')],
+  [ROLES.LOGISTICA]:  [row('Veículo definido'), row('Rota & janela de doca')],
 };
 function getData(){
   try{ const v=JSON.parse(localStorage.getItem(KEY_DATA)); if(v && typeof v==='object') return v; }catch{}
@@ -410,502 +421,22 @@ function getData(){
 }
 function setData(o){ localStorage.setItem(KEY_DATA, JSON.stringify(o)) }
 
-/* Propostas */
+/* ============================================================================
+   📝 PROPOSTAS (Comercial) — GET/SET
+   ============================================================================ */
 function getProps(){ try{const p=JSON.parse(localStorage.getItem(KEY_PROPS)); return Array.isArray(p)?p:[]}catch{return[]} }
 function setProps(a){ localStorage.setItem(KEY_PROPS, JSON.stringify(a)) }
 
-/* UI / Rotas */
-function initUI(){
-  ['pageLogin','pageAdmin','pageDiretoria','pageComercial','pageArea'].forEach(hide);
-  const u=getUser();
-  $('userNav').classList.toggle('hide', !u);
-  if(!u){ show('pageLogin'); return; }
+/* ============================================================================
+   ☁️ DRIVE SYNC — Usa seu Apps Script como “fonte de verdade”
+   - Puxa do Drive ao carregar
+   - Envia pro Drive automaticamente (debounce) quando algo muda
+   ============================================================================ */
 
-  $('userName').textContent=u.name||u.username;
-  $('userRole').textContent=u.role;
-
-  if(u.role===ROLES.ADMIN){
-    show('pageAdmin'); bindAdminTabs(); fillAreaSelect(); renderDashboard(); prepareAccessTab(); return;
-  }
-  if(u.role===ROLES.DIRETORIA){
-    show('pageDiretoria'); renderDirProps(); return;
-  }
-  if(u.role===ROLES.COMERCIAL){
-    show('pageComercial'); bindComercialTabs(); renderMyProps(); return;
-  }
-
-  $('areaTitle').textContent=`Checklist da área — ${u.role}`;
-  show('pageArea'); renderAreaTable(u.role,'areaTable');
-}
-document.addEventListener('DOMContentLoaded', initUI);
-
-/* Login */
-function doLogin(ev){
-  ev.preventDefault();
-  const un=$('inUser').value.trim().toLowerCase();
-  const pw=$('inPass').value.trim();
-  const user=getUsers().find(u=>u.username.toLowerCase()===un && u.password===pw);
-  if(!user){ alert('Usuário ou senha inválidos'); return false; }
-  setUser({username:user.username,name:user.name,role:user.role});
-  initUI();
-  return false;
-}
-
-/* Admin: Tabs/Acessos */
-function bindAdminTabs(){
-  const container=$('adminTabs');
-  container.querySelectorAll('.tab').forEach(btn=>{
-    btn.onclick=()=>{
-      container.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      hide('panel-dash'); hide('panel-area'); hide('panel-access');
-      if(btn.dataset.tab==='dash'){ show('panel-dash'); renderDashboard(); }
-      if(btn.dataset.tab==='area'){ show('panel-area'); renderAdminAreaView($('areaSelect').value); }
-      if(btn.dataset.tab==='access'){ show('panel-access'); prepareAccessTab(); }
-    };
-  });
-}
-function prepareAccessTab(){
-  const sel=$('accRole');
-  sel.innerHTML=Object.values(ROLES).map(r=>`<option>${r}</option>`).join('');
-  renderAccessList();
-  ensureApproverBox(); renderApprovers();
-}
-function renderAccessList(){
-  const users=getUsers();
-  $('userList').innerHTML = users.length? `
-  <div style="overflow:auto"><table>
-    <thead><tr><th>NOME</th><th>USUÁRIO</th><th>PERFIL</th><th></th></tr></thead>
-    <tbody>
-      ${users.map(u=>`
-        <tr>
-          <td>${esc(u.name)}</td>
-          <td><code>${esc(u.username)}</code></td>
-          <td>${esc(u.role)}</td>
-          <td style="text-align:right">
-            <button class="btn xs ghost" onclick="resetPassword('${u.username}')">Redefinir senha</button>
-            <button class="btn xs warn" onclick="changeRole('${u.username}')">Mudar perfil</button>
-            ${u.username==='admin'?'':`<button class="btn xs danger" onclick="deleteUser('${u.username}')">Excluir</button>`}
-          </td>
-        </tr>`).join('')}
-    </tbody>
-  </table></div>` : `<p class="muted">Nenhum usuário.</p>`;
-}
-function createAccess(){
-  const name=$('accName').value.trim();
-  const username=$('accUser').value.trim().toLowerCase();
-  const password=$('accPass').value.trim();
-  const role=$('accRole').value;
-  if(!name||!username||!password||!role) return alert('Preencha todos os campos.');
-  const users=getUsers();
-  if(users.some(u=>u.username.toLowerCase()===username)) return alert('Login já existe.');
-  users.push({name,username,password,role}); setUsers(users);
-  ['accName','accUser','accPass'].forEach(id=>$(id).value=''); $('accRole').selectedIndex=0;
-  renderAccessList(); alert('Acesso criado!');
-}
-function deleteUser(username){
-  if(!confirm(`Excluir o usuário "${username}"?`)) return;
-  const users=getUsers().filter(u=>u.username!==username);
-  setUsers(users); renderAccessList();
-}
-function resetPassword(username){
-  const np=prompt(`Nova senha para "${username}":`,''); if(np===null) return;
-  const users=getUsers(); const u=users.find(x=>x.username===username); if(!u) return;
-  u.password=(np||'').trim(); if(!u.password) return alert('Senha vazia.');
-  setUsers(users); alert('Senha atualizada!');
-}
-function changeRole(username){
-  const roles=Object.values(ROLES).join(', ');
-  const choice=prompt(`Novo perfil para "${username}"\nOpções: ${roles}`, ROLES.COMERCIAL);
-  if(choice===null) return;
-  if(!Object.values(ROLES).includes(choice)) return alert('Perfil inválido.');
-  const users=getUsers(); const u=users.find(x=>x.username===username); if(!u) return;
-  u.role=choice; setUsers(users); renderAccessList();
-}
-
-/* Aprovadores (Admin) */
-function ensureApproverBox(){
-  const panel=$('panel-access');
-  if(!panel.querySelector('#dirApproversBox')){
-    const div=document.createElement('div');
-    div.id='dirApproversBox';
-    div.className='card';
-    div.style.marginTop='14px';
-    panel.appendChild(div);
-  }
-}
-function renderApprovers(){
-  const box=$('dirApproversBox'); const list=getApprovers();
-  box.innerHTML = `
-    <h2 style="margin:6px 0 12px">Diretoria — Aprovadores (Nome + PIN para assinatura)</h2>
-    <div style="overflow:auto">
-      <table>
-        <thead><tr><th>#</th><th>Nome</th><th>PIN (4–8 dígitos)</th><th></th></tr></thead>
-        <tbody>
-          ${list.map((a,i)=>`
-            <tr>
-              <td>${i+1}</td>
-              <td><input id="ap_name_${i}" value="${esc(a.name)}"></td>
-              <td><input id="ap_pin_${i}" value="${esc(a.pin)}" maxlength="8"></td>
-              <td style="text-align:right">
-                <button class="btn xs ok" onclick="saveApprover(${i})">Salvar</button>
-                <button class="btn xs danger" onclick="deleteApprover(${i})">Remover</button>
-              </td>
-            </tr>
-          `).join('')}
-        </tbody>
-      </table>
-    </div>
-    <div class="row" style="justify-content:flex-end;margin-top:10px">
-      <button class="btn sm" onclick="addApprover()">Adicionar aprovador</button>
-    </div>`;
-}
-function saveApprover(i){
-  const list=getApprovers();
-  const name=$('ap_name_'+i).value.trim();
-  const pin=($('ap_pin_'+i).value||'').trim();
-  if(!name||!pin) return alert('Informe nome e PIN.');
-  if(!/^[0-9]{4,8}$/.test(pin)) return alert('PIN deve ter 4 a 8 dígitos numéricos.');
-  list[i]={name,pin}; setApprovers(list); alert('Aprovador salvo!');
-  renderApprovers();
-}
-function deleteApprover(i){
-  const list=getApprovers(); list.splice(i,1); setApprovers(list); renderApprovers();
-}
-function addApprover(){
-  const list=getApprovers(); list.push({name:'Novo Diretor', pin:'0000'}); setApprovers(list); renderApprovers();
-}
-
-/* Dashboard */
-function progressOf(area){
-  const data=getData()[area]||[]; const total=data.length||1;
-  const done=data.filter(r=>r.apIda || r.apVolta).length;
-  return {pct:Math.round(100*done/total), done, total};
-}
-function renderDashboard(){
-  const areas=Object.values(ROLES).filter(r=>![ROLES.ADMIN,ROLES.DIRETORIA,ROLES.COMERCIAL].includes(r));
-  $('dashCards').innerHTML = areas.map(a=>{
-    const p=progressOf(a);
-    return `<div class="card" style="min-width:280px">
-      <div class="row" style="gap:16px;align-items:center">
-        <div class="progress" style="width:120px;height:12px"><div class="bar" style="width:${p.pct}%"></div></div>
-        <div>
-          <div style="font-weight:900">${a}</div>
-          <div class="row"><span class="pill">Concl.: ${p.done}</span><span class="pill">Pend.: ${p.total-p.done}</span></div>
-        </div>
-        <div class="pill">${p.pct}%</div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* Admin > Área */
-function fillAreaSelect(){
-  const sel=$('areaSelect');
-  sel.innerHTML = Object.values(ROLES)
-    .filter(r=>![ROLES.ADMIN,ROLES.DIRETORIA,ROLES.COMERCIAL].includes(r))
-    .map(r=>`<option>${r}</option>`).join('');
-  sel.onchange=()=>renderAdminAreaView(sel.value);
-  renderAdminAreaView(sel.value);
-}
-function renderAdminAreaView(area){ renderAreaTable(area,'areaWrap',true); }
-
-/* Checklist render/editar */
-function renderAreaTable(area, targetId, adminView=false){
-  const db=getData(); const items=db[area]||[];
-  const p=progressOf(area); const target=$(targetId);
-  const header=`<div class="row" style="justify-content:space-between;margin-bottom:8px">
-    <div class="kpi"><strong>${area}</strong><span>${p.pct}%</span></div>
-    <div style="min-width:220px" class="progress"><div class="bar" style="width:${p.pct}%"></div></div>
-  </div>`;
-  const tools = adminView?`
-    <div class="row" style="justify-content:flex-end;margin-bottom:8px">
-      <button class="btn xs ok" onclick="markAll(true,'${area}')">Marcar todos</button>
-      <button class="btn xs ghost" onclick="markAll(false,'${area}')">Desmarcar</button>
-      <button class="btn xs" onclick="saveChecks()">Salvar</button>
-      <button class="btn xs ghost" onclick="downloadCSV('${area}')">Exportar CSV</button>
-    </div>`:'';
-  const table=`
-  <div style="overflow:auto">
-    <table>
-      <thead>
-        <tr>
-          <th style="min-width:220px">ITEM</th>
-          <th style="min-width:200px">DESCRIÇÃO</th>
-          <th colspan="4" style="text-align:center">IDA</th>
-          <th colspan="2" style="text-align:center">VOLTA</th>
-          <th style="min-width:160px">AP.</th>
-        </tr>
-        <tr>
-          <th></th><th></th>
-          <th>ANTIGO</th><th>NOVO</th><th>ENVIAR</th><th>SOBRA</th>
-          <th>VOLTOU</th><th>FALTOU</th>
-          <th>Ida / Volta</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${items.map((r,i)=>`
-          <tr>
-            <td>${esc(r.item)}</td>
-            <td><input data-k="desc" data-i="${i}" value="${esc(r.desc||'')}" oninput="editRow(this,'${area}')"></td>
-
-            <td><input type="number" min="0" data-k="antigo" data-i="${i}" value="${num(r.antigo)}" oninput="editRow(this,'${area}')"></td>
-            <td><input type="number" min="0" data-k="novo"   data-i="${i}" value="${num(r.novo)}"   oninput="editRow(this,'${area}')"></td>
-            <td style="text-align:center"><strong>${num(r.enviar)}</strong></td>
-            <td style="text-align:center"><strong>${num(r.sobra)}</strong></td>
-
-            <td><input type="number" min="0" data-k="voltou" data-i="${i}" value="${num(r.voltou)}" oninput="editRow(this,'${area}')"></td>
-            <td style="text-align:center"><strong>${num(r.faltou)}</strong></td>
-
-            <td>
-              <label class="pill" style="display:inline-flex;gap:6px;align-items:center">
-                <input type="checkbox" ${r.apIda?'checked':''} onchange="setAp('${area}',${i},'ida',this)"> Ida
-              </label>
-              <label class="pill" style="display:inline-flex;gap:6px;align-items:center">
-                <input type="checkbox" ${r.apVolta?'checked':''} onchange="setAp('${area}',${i},'volta',this)"> Volta
-              </label>
-            </td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  </div>`;
-  target.innerHTML = header + tools + table;
-}
-function editRow(el,area){
-  const i=+el.dataset.i, k=el.dataset.k;
-  const v=(el.type==='number')?Math.max(0,Number(el.value||0)):el.value;
-  const db=getData(); const r=db[area][i];
-  r[k]=v;
-  // Regras
-  r.enviar=Math.max(0, num(r.novo)-num(r.antigo));
-  r.sobra =Math.max(0, num(r.antigo)-num(r.novo));
-  r.faltou=Math.max(0, num(r.enviar)-num(r.voltou));
-  setData(db);
-  if($('areaTable')) renderAreaTable(area,'areaTable');
-  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
-  renderDashboard();
-}
-function setAp(area,i,which,el){
-  const db=getData(); const r=db[area][i];
-  if(which==='ida')  r.apIda   = el.checked;
-  if(which==='volta')r.apVolta = el.checked;
-  setData(db);
-  if($('areaTable')) renderAreaTable(area,'areaTable');
-  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
-  renderDashboard();
-}
-function markAll(val,areaOpt){
-  const area=areaOpt || (getUser()?.role);
-  const db=getData(); (db[area]||[]).forEach(r=>{r.apIda=!!val; r.apVolta=val? r.apVolta : false;});
-  setData(db);
-  if($('areaTable')) renderAreaTable(area,'areaTable');
-  if($('areaWrap'))  renderAreaTable(area,'areaWrap',true);
-  renderDashboard();
-}
-function saveChecks(){ alert('Checklist salvo!'); }
-
-/* CSV */
-function toCSV(rows){
-  const head=['ITEM','DESCRICAO','ANTIGO','NOVO','ENVIAR','SOBRA','VOLTOU','FALTOU','AP_IDA','AP_VOLTA'];
-  const lines=rows.map(r=>[
-    csvEsc(r.item), csvEsc(r.desc||''), num(r.antigo), num(r.novo), num(r.enviar), num(r.sobra),
-    num(r.voltou), num(r.faltou), r.apIda?1:0, r.apVolta?1:0
-  ].join(','));
-  return head.join(',')+'\n'+lines.join('\n');
-}
-function downloadCSV(area){
-  const db=getData(); const rows=db[area]||[];
-  const blob=new Blob([toCSV(rows)],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`checklist_${area.toLowerCase()}.csv`;
-  document.body.appendChild(a); a.click(); a.remove();
-}
-function exportAreaCSV(){ const area=$('areaSelect').value; downloadCSV(area); }
-function exportMyCSV(){ const u=getUser(); if(!u) return; downloadCSV(u.role); }
-
-/* Comercial — Propostas */
-function bindComercialTabs(){
-  const sec=$('pageComercial');
-  sec.querySelectorAll('.tab').forEach(btn=>{
-    btn.onclick=()=>{
-      sec.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-      sec.querySelectorAll('.panel').forEach(p=>p.classList.add('hide'));
-      btn.classList.add('active');
-      sec.querySelector(`#panel-${btn.dataset.tab}`).classList.remove('hide');
-      if(btn.dataset.tab==='prop-my') renderMyProps();
-    };
-  });
-}
-function enviarProposta(){
-  const u=getUser(); if(!u || u.role!==ROLES.COMERCIAL){ alert('Apenas Comercial.'); return; }
-  const p={
-    id:'P'+Date.now(), createdAt:new Date().toISOString(),
-    createdBy:u.username, createdByName=u.name,
-    dados:{
-      ini:$('pIni').value, vendedor:$('pVend').value,
-      shop:$('pShop').value, totalLojas:$('pTotalLojas').value, crm:$('pCRM').value,
-      vagas:$('pVagas').value, adm:$('pAdm').value, rank:$('pRank').value, exec:$('pExec').value,
-      tel:$('pTel').value, end:$('pEnd').value,
-      montNoite:$('pMontNoite').value, desmNoite:$('pDesmNoite').value, dias:$('pDias').value, feriados:$('pFeriados').value,
-      tema:$('pTema').value, m2:$('pM2').value, lic:$('pLic').value, pisos:$('pPisos').value, valor:$('pValor').value,
-      pe:$('pPe').value, pracaProp:$('pPracaProp').value, qtdPracas:$('pQtdPracas').value,
-      conc:$('pConc').value, bilheteConc:$('pBilheteConc').value,
-      temaAnt:$('pTemaAnt').value, refParque:$('pRefParque').value, periodo:$('pPeriodo').value,
-      aluguel:$('pAluguel').value, faturamento:$('pFaturamento').value,
-      cp1:$('pCP1').value, cp2:$('pCP2').value, cp3:$('pCP3').value, cp4:$('pCP4').value,
-      consider:$('pConsider').value, exig:$('pExig').value, cond:$('pCond').value, gold:$('pGold').value, comissao:$('pComissao').value
-    },
-    status:'PENDENTE',
-    decision:null
-  };
-  if(!p.dados.shop || !p.dados.tema){ alert('Preencha ao menos: Nome do Shopping e Tema.'); return; }
-  const all=getProps(); all.unshift(p); setProps(all);
-  alert('Proposta enviada à Diretoria!');
-  const sec=$('pageComercial');
-  sec.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
-  sec.querySelector('[data-tab="prop-my"]').classList.add('active');
-  $('panel-prop-new').classList.add('hide');
-  $('panel-prop-my').classList.remove('hide');
-  renderMyProps();
-}
-function statusBadge(st){ const c={PENDENTE:'#9ca3af',APROVADO:'#22c55e',NEGADO:'#ef4444'}[st]||'#9ca3af'; return `<span class="pill" style="color:${c};border-color:#2a3b66">${st}</span>`}
-function propsTable(list, canAct){
-  if(!list.length) return `<p class="muted">Nenhuma proposta.</p>`;
-  const rows=list.map(p=>{
-    const d=p.dados, dt=new Date(p.createdAt).toLocaleString();
-    const dec=p.decision?`<div class="s muted">Por: <b>${esc(p.decision.name)}</b> em ${new Date(p.decision.when).toLocaleString()}<br>Obs.: ${esc(p.decision.obs||'-')}</div>`:'';
-    return `<tr>
-      <td><strong>${esc(p.id)}</strong><br><span class="s muted">${dt}</span></td>
-      <td><b>${esc(d.shop)}</b><br><span class="s muted">${esc(d.tema)} • ${esc(d.periodo||'-')}</span></td>
-      <td>${statusBadge(p.status)}${dec}</td>
-      <td style="text-align:right">${canAct?dirActions(p.id):''}</td>
-    </tr>`;
-  }).join('');
-  return `<div style="overflow:auto"><table>
-    <thead><tr><th>ID</th><th>Resumo</th><th>Status</th><th></th></tr></thead>
-    <tbody>${rows}</tbody></table></div>`;
-}
-function renderMyProps(){ const u=getUser(); if(!u) return; $('myPropsWrap').innerHTML=propsTable(getProps().filter(p=>p.createdBy===u.username), false); }
-
-/* Diretoria — Ver tudo + Aprovar/Negar com PIN */
-function renderDirProps(){
-  $('dirPropsWrap').innerHTML = propsTable(getProps(), true);
-  $('dirPropDetail').innerHTML = '';
-}
-function dirActions(id){
-  return `<div class="row" style="justify-content:flex-end">
-    <button class="btn xs ghost" onclick="verProposta('${id}')">Abrir</button>
-    <button class="btn xs ok" onclick="aprovarProposta('${id}')">Aprovar</button>
-    <button class="btn xs danger" onclick="negarProposta('${id}')">Negar</button>
-  </div>`;
-}
-function verProposta(id){
-  const p=getProps().find(x=>x.id===id); if(!p) return;
-  const d=p.dados;
-  $('dirPropDetail').innerHTML = `
-    <div class="card" style="margin-top:12px">
-      <h3 style="margin:0 0 10px">Proposta ${esc(p.id)} — ${esc(d.shop)}</h3>
-
-      <h4>Início & Responsável</h4>
-      <div class="grid-3">
-        <div class="field"><label>Início</label><input readonly value="${esc(d.ini||'')}"></div>
-        <div class="field"><label>Vendedor</label><input readonly value="${esc(d.vendedor||'')}"></div>
-        <div class="field"><label>CRM</label><input readonly value="${esc(d.crm||'')}"></div>
-      </div>
-
-      <h4 style="margin-top:10px">Dados do Shopping</h4>
-      <div class="grid-3">
-        <div class="field"><label>Shopping</label><input readonly value="${esc(d.shop||'')}"></div>
-        <div class="field"><label>Total de Lojas</label><input readonly value="${esc(d.totalLojas||'')}"></div>
-        <div class="field"><label>Administração</label><input readonly value="${esc(d.adm||'')}"></div>
-        <div class="field"><label>Ranking Google</label><input readonly value="${esc(d.rank||'')}"></div>
-        <div class="field"><label>Executivo</label><input readonly value="${esc(d.exec||'')}"></div>
-        <div class="field"><label>Telefones</label><input readonly value="${esc(d.tel||'')}"></div>
-        <div class="field" style="grid-column:1/-1"><label>Endereço</label><input readonly value="${esc(d.end||'')}"></div>
-      </div>
-
-      <h4 style="margin-top:10px">Proposta do Shopping</h4>
-      <div class="grid-3">
-        <div class="field"><label>Tema</label><input readonly value="${esc(d.tema||'')}"></div>
-        <div class="field"><label>Metragem (m²)</label><input readonly value="${esc(d.m2||'')}"></div>
-        <div class="field"><label>Valor</label><input readonly value="${esc(d.valor||'')}"></div>
-        <div class="field"><label>Pé direito</label><input readonly value="${esc(d.pe||'')}"></div>
-        <div class="field"><label>Praça proposta</label><input readonly value="${esc(d.pracaProp||'')}"></div>
-        <div class="field"><label>Qtd praças</label><input readonly value="${esc(d.qtdPracas||'')}"></div>
-        <div class="field"><label>Licenciado</label><input readonly value="${esc(d.lic||'')}"></div>
-        <div class="field"><label>Quantos pisos</label><input readonly value="${esc(d.pisos||'')}"></div>
-        <div class="field"><label>Feriados no período</label><input readonly value="${esc(d.feriados||'')}"></div>
-        <div class="field"><label>Períodos em dias</label><input readonly value="${esc(d.dias||'')}"></div>
-        <div class="field"><label>Noite da montagem</label><input readonly value="${esc(d.montNoite||'')}"></div>
-        <div class="field"><label>Noite da desmontagem</label><input readonly value="${esc(d.desmNoite||'')}"></div>
-        <div class="field"><label>Concorrência</label><input readonly value="${esc(d.conc||'')}"></div>
-        <div class="field"><label>Bilheteria concorrente</label><input readonly value="${esc(d.bilheteConc||'')}"></div>
-      </div>
-
-      <h4 style="margin-top:10px">Referências de Faturamento</h4>
-      <div class="grid-3">
-        <div class="field"><label>Tema (se já operamos)</label><input readonly value="${esc(d.temaAnt||'')}"></div>
-        <div class="field"><label>Referência (se não operamos)</label><input readonly value="${esc(d.refParque||'')}"></div>
-        <div class="field"><label>Período</label><input readonly value="${esc(d.periodo||'')}"></div>
-        <div class="field"><label>Aluguel</label><input readonly value="${esc(d.aluguel||'')}"></div>
-        <div class="field" style="grid-column:1/-1"><label>Faturamento total</label><input readonly value="${esc(d.faturamento||'')}"></div>
-      </div>
-
-      <h4 style="margin-top:10px">Negociação</h4>
-      <div class="grid-3">
-        <div class="field"><label>1ª contraproposta</label><input readonly value="${esc(d.cp1||'')}"></div>
-        <div class="field"><label>2ª contraproposta</label><input readonly value="${esc(d.cp2||'')}"></div>
-        <div class="field"><label>3ª contraproposta</label><input readonly value="${esc(d.cp3||'')}"></div>
-        <div class="field"><label>4ª contraproposta</label><input readonly value="${esc(d.cp4||'')}"></div>
-      </div>
-
-      <h4 style="margin-top:10px">Condições & Observações</h4>
-      <div class="grid-3">
-        <div class="field"><label>Condições</label><input readonly value="${esc(d.cond||'')}"></div>
-        <div class="field"><label>Negociação GOLD</label><input readonly value="${esc(d.gold||'Não')}"></div>
-        <div class="field"><label>Comissão</label><input readonly value="${esc(d.comissao||'')}"></div>
-        <div class="field" style="grid-column:1/-1"><label>Exigências do shopping</label><textarea rows="3" readonly>${esc(d.exig||'')}</textarea></div>
-        <div class="field" style="grid-column:1/-1"><label>Considerações finais</label><textarea rows="3" readonly>${esc(d.consider||'')}</textarea></div>
-      </div>
-    </div>`;
-}
-function aprovarProposta(id){ decidirProposta(id,true); }
-function negarProposta(id){ decidirProposta(id,false); }
-function decidirProposta(id,isApprove){
-  const u=getUser(); if(!u || u.role!==ROLES.DIRETORIA){ alert('Apenas Diretoria.'); return; }
-  const list=getApprovers();
-  if(!list.length) return alert('Nenhum aprovador cadastrado. Cadastre no Admin > Acessos.');
-  const nomes=list.map(a=>a.name).join('\n - ');
-  const nome=prompt(`Digite seu NOME exatamente como cadastrado:\n - ${nomes}\n\nNome:`, '');
-  if(nome===null) return;
-  const ap=list.find(a=>a.name.trim().toLowerCase()===String(nome).trim().toLowerCase());
-  if(!ap) return alert('Nome não encontrado nos aprovadores.');
-  const pin=prompt(`Olá, ${ap.name}. Digite seu PIN para ${isApprove?'aprovar':'negar'}:`, '');
-  if(pin===null) return;
-  if(ap.pin!==String(pin)) return alert('PIN inválido.');
-  const obs=prompt('Observação (opcional):','')||'';
-  const all=getProps(); const p=all.find(x=>x.id===id); if(!p) return;
-  p.status=isApprove?'APROVADO':'NEGADO';
-  p.decision={ by:ap.name, name:ap.name, when:new Date().toISOString(), obs };
-  setProps(all);
-  alert(isApprove?'Proposta aprovada!':'Proposta negada.');
-  renderDirProps();
-}
-</script>
-
-<script>
-/* =========================================================
-   PARTE 3 — SINCRONIZAÇÃO COM GOOGLE DRIVE (Apps Script)
-   - Botões "Puxar do Drive" / "Enviar p/ Drive" aparecem
-     apenas para ADMIN, ao lado do "Sair".
-   - Usa sua Web App URL (GET/POST) para salvar/ler JSON.
-   ========================================================= */
-
+/* 1) URL do seu Apps Script Web App (AJUSTE AQUI se mudou) */
 const SIS_API_URL = "https://script.google.com/macros/s/AKfycbzmQkU1l5p1taS93eouEmX0Qdm627g7PHwpdLw1lOevmWOKhrPuY6WOXYi9Kxchpp6y2w/exec";
 
-/* IDs (nomes) de documentos JSON na nuvem */
+/* 2) Identificadores dos "documentos" no Drive */
 const CLOUD_DOCS = {
   users:      'users',
   checklists: 'checklists',
@@ -913,97 +444,336 @@ const CLOUD_DOCS = {
   approvers:  'approvers',
 };
 
-/* Cliente HTTP */
-async function driveGet(docId){
+/* 3) Cliente simples para GET/POST */
+async function driveGet(docId) {
   const url = `${SIS_API_URL}?docId=${encodeURIComponent(docId)}`;
   const r = await fetch(url, { method: 'GET' });
-  if(!r.ok) throw new Error('HTTP ' + r.status);
+  if (!r.ok) throw new Error('GET ' + r.status);
   const j = await r.json();
-  if(!j.ok) throw new Error(j.error || 'Erro GET');
-  return j.data || {};
+  if (j.ok !== true) throw new Error(j.error || 'Erro GET');
+  return j.data;
 }
-async function drivePost(docId, data){
+async function drivePost(docId, data) {
   const r = await fetch(SIS_API_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type':'application/json' },
     body: JSON.stringify({ docId, data })
   });
-  if(!r.ok) throw new Error('HTTP ' + r.status);
+  if (!r.ok) throw new Error('POST ' + r.status);
   const j = await r.json();
-  if(!j.ok) throw new Error(j.error || 'Erro POST');
+  if (j.ok !== true) throw new Error(j.error || 'Erro POST');
   return true;
 }
 
-/* Sync: Nuvem -> Navegador */
-async function syncPullDrive(){
-  try{
-    const [u,d,p,a] = await Promise.all([
+/* 4) Puxar tudo do Drive antes de abrir a UI */
+async function pullAllFromDrive() {
+  try {
+    const [u, d, p, a] = await Promise.all([
       driveGet(CLOUD_DOCS.users),
       driveGet(CLOUD_DOCS.checklists),
       driveGet(CLOUD_DOCS.propostas),
       driveGet(CLOUD_DOCS.approvers),
     ]);
-    if(Object.keys(u).length) localStorage.setItem('sis_users', JSON.stringify(u));
-    if(Object.keys(d).length) localStorage.setItem('sis_checklists', JSON.stringify(d));
-    if(Array.isArray(p))      localStorage.setItem('sis_propostas', JSON.stringify(p));
-    if(Array.isArray(a))      localStorage.setItem('sis_dir_approvers', JSON.stringify(a));
-    alert('✅ Puxado do Drive com sucesso!');
-    if(typeof initUI==='function') initUI();
-  }catch(e){
-    console.error(e);
-    alert('❌ Erro ao puxar do Drive: ' + e.message);
+    if (u && typeof u === 'object') localStorage.setItem(KEY_USERS, JSON.stringify(u));
+    if (d && typeof d === 'object') localStorage.setItem(KEY_DATA, JSON.stringify(d));
+    if (Array.isArray(p))           localStorage.setItem(KEY_PROPS, JSON.stringify(p));
+    if (Array.isArray(a))           localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(a));
+    console.log('✅ Puxou do Drive com sucesso');
+  } catch (e) {
+    console.warn('⚠️ Não conseguiu puxar do Drive. Usando cache local.', e);
+    // segue com o que existir local
+    if(!localStorage.getItem(KEY_USERS))         localStorage.setItem(KEY_USERS, JSON.stringify(SEED_USERS));
+    if(!localStorage.getItem(KEY_DIR_APPROVERS)) localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(SEED_APPROVERS));
+    if(!localStorage.getItem(KEY_DATA))          localStorage.setItem(KEY_DATA, JSON.stringify(DEFAULT_DATA));
+    if(!localStorage.getItem(KEY_PROPS))         localStorage.setItem(KEY_PROPS, JSON.stringify([]));
   }
 }
 
-/* Sync: Navegador -> Nuvem */
-async function syncPushDrive(){
-  try{
-    const u = JSON.parse(localStorage.getItem('sis_users')          || '[]');
-    const d = JSON.parse(localStorage.getItem('sis_checklists')     || '{}');
-    const p = JSON.parse(localStorage.getItem('sis_propostas')      || '[]');
-    const a = JSON.parse(localStorage.getItem('sis_dir_approvers')  || '[]');
-    await Promise.all([
-      drivePost(CLOUD_DOCS.users,      u),
-      drivePost(CLOUD_DOCS.checklists, d),
-      drivePost(CLOUD_DOCS.propostas,  p),
-      drivePost(CLOUD_DOCS.approvers,  a),
-    ]);
-    alert('✅ Enviado ao Drive com sucesso!');
-  }catch(e){
-    console.error(e);
-    alert('❌ Erro ao enviar ao Drive: ' + e.message);
-  }
-}
+/* 5) Enviar automaticamente ao Drive (debounce) sempre que set* for chamado */
+let _debounceTimer = null;
+function _debounce(fn, wait = 1500) { clearTimeout(_debounceTimer); _debounceTimer = setTimeout(fn, wait); }
+function _safeParseGet(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) ?? fallback; } catch { return fallback; } }
 
-/* Botões visíveis só para ADMIN */
-document.addEventListener('DOMContentLoaded', ()=>{
-  const nav = document.getElementById('userNav'); if(!nav) return;
+const _setUsers     = setUsers;
+const _setData      = setData;
+const _setPropsFn   = setProps;
+const _setApprovers = setApprovers;
 
-  const btnWrap = document.createElement('div');
-  btnWrap.className = 'row';
-  btnWrap.style.marginLeft = '8px';
-  btnWrap.innerHTML = `
-    <button class="btn ghost" id="btnPull">Puxar do Drive</button>
-    <button class="btn ghost" id="btnPush">Enviar p/ Drive</button>
-  `;
-  nav.appendChild(btnWrap);
+setUsers = function(list){
+  _setUsers(list);
+  _debounce(async () => {
+    try { await drivePost(CLOUD_DOCS.users, _safeParseGet(KEY_USERS, [])); console.log('⬆️ users -> Drive'); }
+    catch(e){ console.warn('Erro enviar users -> Drive', e); }
+  });
+};
+setData = function(obj){
+  _setData(obj);
+  _debounce(async () => {
+    try { await drivePost(CLOUD_DOCS.checklists, _safeParseGet(KEY_DATA, {})); console.log('⬆️ checklists -> Drive'); }
+    catch(e){ console.warn('Erro enviar checklists -> Drive', e); }
+  });
+};
+setProps = function(arr){
+  _setPropsFn(arr);
+  _debounce(async () => {
+    try { await drivePost(CLOUD_DOCS.propostas, _safeParseGet(KEY_PROPS, [])); console.log('⬆️ propostas -> Drive'); }
+    catch(e){ console.warn('Erro enviar propostas -> Drive', e); }
+  });
+};
+setApprovers = function(arr){
+  _setApprovers(arr);
+  _debounce(async () => {
+    try { await drivePost(CLOUD_DOCS.approvers, _safeParseGet(KEY_DIR_APPROVERS, [])); console.log('⬆️ approvers -> Drive'); }
+    catch(e){ console.warn('Erro enviar approvers -> Drive', e); }
+  });
+};
 
-  const isAdmin = ()=>{
-    try{
-      const u = JSON.parse(localStorage.getItem('sis_session') || 'null');
-      return u && u.role === 'ADMIN';
-    }catch{ return false; }
-  };
-
-  document.getElementById('btnPull').onclick = ()=>{
-    if(!isAdmin()) return alert('Somente ADMIN pode sincronizar.');
-    syncPullDrive();
-  };
-  document.getElementById('btnPush').onclick = ()=>{
-    if(!isAdmin()) return alert('Somente ADMIN pode sincronizar.');
-    syncPushDrive();
-  };
+/* ============================================================================
+   🚀 BOOT — Corrige travamento no login:
+   - Primeiro tenta puxar do Drive;
+   - Depois chama initUI() (definida na PARTE 3).
+   ============================================================================ */
+document.addEventListener('DOMContentLoaded', async () => {
+  try { await pullAllFromDrive(); } catch(e){ console.warn('pullAllFromDrive falhou', e); }
+  if (typeof initUI === 'function') { initUI(); }
 });
 </script>
-</body>
+<!-- ========================== PARTE 2/3 — FIM ========================== -->
+<!-- ========================== PARTE 3/3 — INÍCIO (JS: UI principal) ========================== -->
+<script>
+/* ============================================================================
+   🚪 LOGIN / INIT
+   ============================================================================ */
+function doLogin(ev){
+  ev.preventDefault();
+  const u = $("inUser").value.trim().toLowerCase();
+  const p = $("inPass").value.trim();
+  const list = getUsers();
+  const user = list.find(x => x.username.toLowerCase() === u && x.password === p);
+  if(!user){ alert("Usuário ou senha incorretos."); return false; }
+  setUser(user);
+  initUI();
+  return false;
+}
+
+function initUI(){
+  const u = getUser();
+  hide("pageLogin"); hide("pageAdmin"); hide("pageComercial");
+  hide("pageDiretoria"); hide("pageArea");
+  $("userNav").classList.add("hide");
+
+  if(!u){ show("pageLogin"); return; }
+
+  $("userName").textContent = u.name;
+  $("userRole").textContent = u.role;
+  $("userNav").classList.remove("hide");
+
+  switch(u.role){
+    case ROLES.ADMIN:      show("pageAdmin"); renderAdmin(); break;
+    case ROLES.COMERCIAL:  show("pageComercial"); renderComercial(); break;
+    case ROLES.DIRETORIA:  show("pageDiretoria"); renderDiretoria(); break;
+    default:                show("pageArea"); renderArea(u.role); break;
+  }
+}
+
+/* ============================================================================
+   🧭 ADMIN
+   ============================================================================ */
+function renderAdmin(){
+  const roles = Object.values(ROLES);
+  const sel = $("accRole");
+  sel.innerHTML = roles.map(r=>`<option value="${r}">${r}</option>`).join("");
+  renderUserList();
+}
+function renderUserList(){
+  const u = getUsers();
+  const html = u.map(x=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:4px 0">
+    <span><b>${x.name}</b> (${x.username}) — ${x.role}</span></div>`).join("");
+  $("userList").innerHTML = html;
+}
+function createAccess(){
+  const name=$("accName").value.trim();
+  const username=$("accUser").value.trim().toLowerCase();
+  const pass=$("accPass").value.trim();
+  const role=$("accRole").value;
+  if(!name||!username||!pass){ alert("Preencha todos os campos."); return; }
+  const u=getUsers();
+  if(u.find(x=>x.username===username)){ alert("Usuário já existe."); return; }
+  u.push({name,username,password:pass,role});
+  setUsers(u);
+  alert("Usuário criado!");
+  renderUserList();
+}
+
+/* ============================================================================
+   💼 COMERCIAL — Enviar proposta / visualizar propostas
+   ============================================================================ */
+function enviarProposta(){
+  const campos = [
+    "pIni","pVend","pShop","pTotalLojas","pCRM","pVagas","pAdm","pRank","pExec","pTel","pEnd",
+    "pMontNoite","pDesmNoite","pDias","pFeriados","pTema","pM2","pLic","pPisos","pValor","pPe",
+    "pPracaProp","pQtdPracas","pConc","pBilheteConc","pTemaAnt","pRefParque","pPeriodo","pAluguel",
+    "pFaturamento","pCP1","pCP2","pCP3","pCP4","pConsider","pExig","pCond","pGold","pComissao"
+  ];
+  const data = {};
+  campos.forEach(id => data[id] = $(id).value);
+  const arr = getProps();
+  const user = getUser();
+  arr.push({
+    id: Date.now(),
+    criadoPor: user?.name,
+    dados: data,
+    status: "Pendente",
+    aprovadoPor: null,
+    observacao: ""
+  });
+  setProps(arr);
+  alert("Proposta enviada à diretoria!");
+  campos.forEach(id=>$(id).value="");
+  renderMyPropostas();
+}
+
+function renderComercial(){
+  const tabs = document.querySelectorAll("#pageComercial .tab");
+  tabs.forEach(btn=>{
+    btn.onclick = ()=>{
+      tabs.forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const t=btn.dataset.tab;
+      $("panel-prop-new").classList.toggle("hide",t!=="prop-new");
+      $("panel-prop-my").classList.toggle("hide",t!=="prop-my");
+      if(t==="prop-my") renderMyPropostas();
+    };
+  });
+  renderMyPropostas();
+}
+
+function renderMyPropostas(){
+  const arr=getProps();
+  const user=getUser();
+  const my=arr.filter(p=>p.criadoPor===user?.name);
+  if(!my.length){ $("myPropsWrap").innerHTML="<p>Nenhuma proposta enviada.</p>"; return; }
+  $("myPropsWrap").innerHTML=my.map(p=>`
+    <div class="card" style="margin-bottom:10px">
+      <b>Shopping:</b> ${esc(p.dados.pShop||"-")}<br>
+      <b>Status:</b> ${p.status} ${p.aprovadoPor?`por ${p.aprovadoPor}`:""}<br>
+      <b>Obs.:</b> ${esc(p.observacao||"-")}
+    </div>
+  `).join("");
+}
+
+/* ============================================================================
+   🏛️ DIRETORIA — Visualiza e aprova propostas (sem editar)
+   ============================================================================ */
+function renderDiretoria(){
+  const arr=getProps();
+  const wrap=$("dirPropsWrap");
+  if(!arr.length){ wrap.innerHTML="<p>Sem propostas enviadas.</p>"; return; }
+  wrap.innerHTML=arr.map(p=>`
+    <div class="card" style="margin-bottom:10px">
+      <b>${esc(p.dados.pShop)}</b><br>
+      <small>${p.status}${p.aprovadoPor?` — ${p.aprovadoPor}`:""}</small><br>
+      <button class="btn sm" onclick="verProposta(${p.id})">Ver Detalhes</button>
+    </div>
+  `).join("");
+}
+
+function verProposta(id){
+  const arr=getProps();
+  const p=arr.find(x=>x.id===id);
+  if(!p) return;
+  let html=`<h3>${esc(p.dados.pShop||"Sem nome")}</h3>`;
+  html+="<table>";
+  for(const [k,v] of Object.entries(p.dados)){ html+=`<tr><td>${k}</td><td>${esc(v)}</td></tr>`; }
+  html+="</table>";
+  html+=`
+    <p><b>Status:</b> ${p.status}</p>
+    <p><b>Aprovado por:</b> ${esc(p.aprovadoPor||"-")}</p>
+    <p><b>Observação:</b> ${esc(p.observacao||"-")}</p>
+    <div class="row" style="margin-top:10px">
+      <button class="btn ok" onclick="aprovar(${id})">Aprovar</button>
+      <button class="btn danger" onclick="negar(${id})">Negar</button>
+      <button class="btn ghost" onclick="renderDiretoria()">Voltar</button>
+    </div>`;
+  $("dirPropDetail").innerHTML=html;
+  $("dirPropsWrap").innerHTML="";
+}
+
+function aprovar(id){
+  const pin=prompt("Digite seu PIN de aprovação:");
+  if(!pin) return;
+  const aprovs=getApprovers();
+  const dir=aprovs.find(a=>a.pin===pin);
+  if(!dir){ alert("PIN inválido."); return; }
+  const arr=getProps();
+  const p=arr.find(x=>x.id===id);
+  p.status="Aprovado";
+  p.aprovadoPor=dir.name;
+  p.observacao="";
+  setProps(arr);
+  alert("Proposta aprovada!");
+  renderDiretoria();
+}
+function negar(id){
+  const pin=prompt("PIN do diretor:");
+  if(!pin) return;
+  const aprovs=getApprovers();
+  const dir=aprovs.find(a=>a.pin===pin);
+  if(!dir){ alert("PIN inválido."); return; }
+  const obs=prompt("Motivo da negativa:");
+  const arr=getProps();
+  const p=arr.find(x=>x.id===id);
+  p.status="Negado";
+  p.aprovadoPor=dir.name;
+  p.observacao=obs||"";
+  setProps(arr);
+  alert("Proposta negada.");
+  renderDiretoria();
+}
+
+/* ============================================================================
+   🧾 CHECKLIST (Áreas)
+   ============================================================================ */
+function renderArea(role){
+  $("areaTitle").textContent = `Checklist — ${role}`;
+  const data=getData();
+  const arr=data[role]||[];
+  if(!arr.length){ $("areaTable").innerHTML="<p>Sem itens.</p>"; return; }
+  $("areaTable").innerHTML=`
+  <table>
+    <thead><tr><th>Item</th><th>Antigo</th><th>Novo</th><th>Enviar</th><th>Sobra</th><th>Voltou</th><th>Faltou</th></tr></thead>
+    <tbody>
+      ${arr.map((r,i)=>`
+        <tr>
+          <td>${esc(r.item)}</td>
+          <td><input type="number" value="${r.antigo}" onchange="updVal('${role}',${i},'antigo',this.value)"></td>
+          <td><input type="number" value="${r.novo}" onchange="updVal('${role}',${i},'novo',this.value)"></td>
+          <td><input type="number" value="${r.enviar}" onchange="updVal('${role}',${i},'enviar',this.value)"></td>
+          <td><input type="number" value="${r.sobra}" onchange="updVal('${role}',${i},'sobra',this.value)"></td>
+          <td><input type="number" value="${r.voltou}" onchange="updVal('${role}',${i},'voltou',this.value)"></td>
+          <td><input type="number" value="${r.faltou}" onchange="updVal('${role}',${i},'faltou',this.value)"></td>
+        </tr>`).join("")}
+    </tbody>
+  </table>`;
+}
+function updVal(role,idx,key,val){
+  const d=getData(); if(!d[role]) return;
+  d[role][idx][key]=num(val);
+  setData(d);
+}
+function markAll(v){
+  const u=getUser(); const d=getData(); if(!u||!d[u.role]) return;
+  d[u.role].forEach(r=>r.apIda=v);
+  setData(d); renderArea(u.role);
+}
+function saveChecks(){
+  alert("Checklist salvo!");
+}
+
+/* ============================================================================
+   ✅ FINALIZAÇÃO
+   ============================================================================ */
+console.log("SIS carregado com sucesso.");
+</script>
+<!-- ========================== PARTE 3/3 — FIM ========================== -->
 </html>
