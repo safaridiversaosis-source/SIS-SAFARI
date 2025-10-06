@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>SIS — Sistema Interno Safári</title>
+
+  <!-- (1) CSS global do sistema -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Dica: não coloque JS aqui no <head> para evitar rodar antes do HTML existir -->
+</head>
+<body>
+  <!-- =========================================================
+       TOPO (barra com logo e usuário logado)
+       ========================================================= -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" class="logo" onerror="this.style.display='none'">
+      <span>SIS — Sistema Interno Safári</span>
+    </div>
+    <div id="userNav" class="row hide">
+      <span>Olá, <strong id="userName"></strong> — <span id="userRole"></span></span>
+      <button class="btn ghost" onclick="logout()">Sair</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- =======================================================
+         PÁGINA DE LOGIN
+         - Mostra quando não há sessão ativa
+         - O formulário chama doLogin(event) no onsubmit
+       ======================================================= -->
+    <section id="pageLogin">
+      <!-- blobs/animações de fundo -->
+      <div class="blob one"></div><div class="blob two"></div><div class="blob three"></div>
+      <div class="twinkle" id="twinkle"></div>
+
+      <div class="login-wrap">
+        <div class="login-head">
+          <img src="logo.png" class="logo-lg" onerror="this.style.display='none'">
+          <div class="title-sis">SIS</div>
+          <div class="subtitle">Sistema Interno Safári</div>
+        </div>
+
+        <!-- IMPORTANTE: onsubmit chama doLogin(event) -->
+        <form class="grid-2" id="loginForm">
+          <div class="field">
+            <label>Usuário</label>
+            <input id="inUser" placeholder="ex.: admin, comercial, diretoria1…" required>
+          </div>
+          <div class="field">
+            <label>Senha</label>
+            <input id="inPass" type="password" placeholder="123 ou 123456" required>
+          </div>
+          <div class="row" style="grid-column:1/-1;justify-content:space-between">
+            <div class="row" style="gap:8px">
+              <button class="btn" type="submit">Entrar</button>
+              <button class="btn ghost" type="button" id="btnReset">Resetar sessão</button>
+            </div>
+            <span class="muted s">
+              Admin: <code>admin/123456</code> • Setores: <code>123</code> • Diretoria:
+              <code>diretoria1/7410</code>, <code>diretoria2/8520</code>, <code>diretoria3/9630</code>, <code>diretoria4/1590</code>
+            </span>
+          </div>
+        </form>
+        <div class="signature">Desenvolvido por <b>Gustavo Morino</b> e <b>Felipe Forato</b></div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         ADMIN (Dashboard / Visualizar Área / Acessos)
+       ======================================================= -->
+    <section id="pageAdmin" class="container hide">
+      <div class="tabs" id="adminTabs">
+        <button class="tab active" data-tab="dash">Dashboard</button>
+        <button class="tab" data-tab="area">Visualizar área</button>
+        <button class="tab" data-tab="access">Acessos</button>
+      </div>
+
+      <div id="panel-dash" class="panel">
+        <div class="card">
+          <h2 style="margin:6px 0 14px">Progresso por área</h2>
+          <div id="dashCards" class="row"></div>
+        </div>
+      </div>
+
+      <div id="panel-area" class="panel hide">
+        <div class="card">
+          <div class="row" style="justify-content:space-between">
+            <h2 style="margin:6px 0">Checklist da área</h2>
+            <div class="row">
+              <select id="areaSelect" class="field"
+                      style="padding:8px 10px;border-radius:10px;border:1px solid var(--line);background:rgba(6,18,36,.75);color:var(--ink)"></select>
+              <button class="btn ghost" onclick="exportAreaCSV()">Exportar CSV</button>
+            </div>
+          </div>
+          <div id="areaWrap"></div>
+        </div>
+      </div>
+
+      <div id="panel-access" class="panel hide">
+        <div class="grid-2">
+          <div class="card">
+            <h2 style="margin:6px 0 12px">Criar novo acesso</h2>
+            <div class="form">
+              <div class="field"><label>Nome</label><input id="accName"></div>
+              <div class="field"><label>Usuário (login)</label><input id="accUser"></div>
+              <div class="field"><label>Senha</label><input id="accPass"></div>
+              <div class="field"><label>Área/Perfil</label><select id="accRole"></select></div>
+              <div class="row" style="justify-content:flex-end"><button class="btn sm" id="btnCreateAccess">Criar acesso</button></div>
+              <p class="muted s">Obs.: O usuário criado verá apenas o módulo/área escolhida.</p>
+            </div>
+          </div>
+          <div class="card">
+            <h2 style="margin:6px 0 12px">Usuários cadastrados</h2>
+            <div id="userList"></div>
+          </div>
+        </div>
+        <!-- aqui, via JS, eu injeto o bloco dos aprovadores (diretores) -->
+      </div>
+    </section>
+
+    <!-- =======================================================
+         DIRETORIA (Propostas para aprovação)
+       ======================================================= -->
+    <section id="pageDiretoria" class="container hide">
+      <div class="card">
+        <h2 style="margin:6px 0 12px">Propostas — Aprovação</h2>
+        <div id="dirPropsWrap"></div>
+        <div id="dirPropDetail"></div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         COMERCIAL (Abrir proposta + Minhas propostas)
+       ======================================================= -->
+    <section id="pageComercial" class="container hide">
+      <div class="tabs">
+        <button class="tab active" data-tab="prop-new">Abrir Proposta</button>
+        <button class="tab" data-tab="prop-my">Minhas Propostas</button>
+      </div>
+
+      <div id="panel-prop-new" class="panel">
+        <div class="card">
+          <h2 style="margin:6px 0 12px">Abrir Proposta</h2>
+
+          <div class="grid-2">
+            <div class="field"><label>Início da negociação</label><input id="pIni" type="date"></div>
+            <div class="field"><label>Vendedor Safári</label><input id="pVend" placeholder="Seu nome"></div>
+          </div>
+
+          <h3 style="margin:12px 0 6px">Dados do Shopping</h3>
+          <div class="grid-2">
+            <div class="field"><label>Nome do Shopping</label><input id="pShop" placeholder="conforme Google"></div>
+            <div class="field"><label>Total de Lojas</label><input id="pTotalLojas" type="number" min="0" placeholder="Ex.: 180"></div>
+            <div class="field"><label>Nº oportunidade CRM</label><input id="pCRM"></div>
+            <div class="field"><label>Vagas de Estacionamento e Salas de cinema</label><input id="pVagas"></div>
+            <div class="field"><label>Administração</label><input id="pAdm"></div>
+            <div class="field"><label>Ranking do Google (comparado)</label><input id="pRank"></div>
+            <div class="field"><label>Executivo do Shopping (sobrenome)</label><input id="pExec"></div>
+            <div class="field"><label>Telefones</label><input id="pTel"></div>
+            <div class="field grid-2" style="grid-column:1/-1"><label>Endereço completo</label><input id="pEnd"></div>
+          </div>
+
+          <h3 style="margin:12px 0 6px">Proposta do Shopping</h3>
+          <div class="grid-2">
+            <div class="field"><label>Noite da montagem</label><input id="pMontNoite"></div>
+            <div class="field"><label>Noite da desmontagem</label><input id="pDesmNoite"></div>
+            <div class="field"><label>Períodos em dias</label><input id="pDias" type="number" min="0"></div>
+            <div class="field"><label>Feriados no período</label><input id="pFeriados" placeholder="feriado.com.br"></div>
+            <div class="field"><label>Tema</label><input id="pTema"></div>
+            <div class="field"><label>Metragem da praça (m²)</label><input id="pM2" type="number" min="0"></div>
+            <div class="field"><label>Licenciado? (enviar termo)</label><input id="pLic"></div>
+            <div class="field"><label>Quantos pisos</label><input id="pPisos" type="number" min="0"></div>
+            <div class="field"><label>Valor</label><input id="pValor"></div>
+            <div class="field"><label>Pé direito</label><input id="pPe"></div>
+            <div class="field"><label>Qual praça propõe?</label><input id="pPracaProp"></div>
+            <div class="field"><label>Qtd de praças no shopping</label><input id="pQtdPracas" type="number" min="0"></div>
+            <div class="field"><label>Concorrência no período</label><input id="pConc"></div>
+            <div class="field"><label>Bilheteria do concorrente</label><input id="pBilheteConc"></div>
+          </div>
+
+          <h3 style="margin:12px 0 6px">Referências de Faturamento</h3>
+          <div class="grid-2">
+            <div class="field"><label>Se JÁ operamos, qual foi o tema?</label><input id="pTemaAnt"></div>
+            <div class="field"><label>Se NÃO operamos, esses valores se referem a qual parque?</label><input id="pRefParque"></div>
+            <div class="field"><label>Período</label><input id="pPeriodo"></div>
+            <div class="field"><label>Aluguel da época (TOTAL e PROP/MÊS)</label><input id="pAluguel"></div>
+            <div class="field grid-2" style="grid-column:1/-1"><label>Faturamento total do período (e proporcional)</label><input id="pFaturamento"></div>
+          </div>
+
+          <h3 style="margin:12px 0 6px">Negociação com o Shopping</h3>
+          <div class="grid-2">
+            <div class="field"><label>1ª contraproposta (data e análise)</label><input id="pCP1"></div>
+            <div class="field"><label>2ª contraproposta (data e análise)</label><input id="pCP2"></div>
+            <div class="field"><label>3ª contraproposta (data e análise)</label><input id="pCP3"></div>
+            <div class="field"><label>4ª contraproposta (data e análise)</label><input id="pCP4"></div>
+          </div>
+          <div class="grid-2">
+            <div class="field"><label>Valor e considerações finais</label><textarea id="pConsider" rows="3"></textarea></div>
+            <div class="field"><label>Exigências do shopping</label><textarea id="pExig" rows="3" placeholder="Alvará? Cor de bolinhas?"></textarea></div>
+          </div>
+
+          <h3 style="margin:12px 0 6px">Condições para aprovação</h3>
+          <div class="grid-3">
+            <div class="field"><label>Condições</label><input id="pCond"></div>
+            <div class="field"><label>É uma negociação GOLD?</label>
+              <select id="pGold"><option>Não</option><option>Sim</option></select>
+            </div>
+            <div class="field"><label>Comissão (qtd e valor)</label><input id="pComissao"></div>
+          </div>
+
+          <div class="row" style="justify-content:flex-end;margin-top:10px">
+            <button class="btn" id="btnEnviarProposta">Enviar para Diretoria</button>
+          </div>
+          <p class="muted s">A Diretoria verá a proposta e poderá aprovar/negar com PIN e observação.</p>
+        </div>
+      </div>
+
+      <div id="panel-prop-my" class="panel hide">
+        <div class="card">
+          <h2 style="margin:6px 0 12px">Minhas Propostas Enviadas</h2>
+        <div id="myPropsWrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================
+         ÁREA (Checklists das áreas operacionais)
+       ======================================================= -->
+    <section id="pageArea" class="container hide">
+      <div class="card">
+        <div class="row" style="justify-content:space-between">
+          <div>
+            <h2 id="areaTitle" style="margin:6px 0">Checklist da área</h2>
+            <p class="muted s">
+              Preencha <b>IDA</b> (Antigo/Novo). Na <b>VOLTA</b>, informe o que voltou;
+              <b>ENVIAR/SOBRA/FALTOU</b> calculam sozinhos.
+            </p>
+          </div>
+          <div class="row">
+            <button class="btn xs ok" id="btnMarkAll">Marcar todos</button>
+            <button class="btn xs ghost" id="btnUnmarkAll">Desmarcar</button>
+            <button class="btn xs" id="btnSaveChecks">Salvar</button>
+            <button class="btn xs ghost" id="btnExportMy">Exportar CSV</button>
+          </div>
+        </div>
+        <div id="areaTable"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- (2) JS principal do sistema — sempre ao fim do <body> -->
+  <script src="app.js"></script>
+  <script>
+/* ============================================================
+   SIS — SINCRONIZAÇÃO VIA GOOGLE DRIVE (Apps Script)
+   ✅ Cole este bloco ANTES do </body>
+   ✅ Usa sua Web App URL para salvar/ler JSON no Drive
+   ✅ Mostra botões "Puxar/Enviar" só para ADMIN
+============================================================ */
+
+/* ======= SUA URL DO APPS SCRIPT (já preenchida) ======= */
+const SIS_API_URL = "https://script.google.com/macros/s/AKfycbzmQkU1l5p1taS93eouEmX0Qdm627g7PHwpdLw1lOevmWOKhrPuY6WOXYi9Kxchpp6y2w/exec";
+
+/* ======= IDs de documentos na nuvem ======= */
+const CLOUD_DOCS = {
+  users:        'users',
+  checklists:   'checklists',
+  propostas:    'propostas',
+  approvers:    'approvers',
+};
+
+/* ======= Chaves do localStorage (mantenha iguais às do seu app) ======= */
+const KEY_SESSION        = 'sis_session';
+const KEY_USERS          = 'sis_users';
+const KEY_DATA           = 'sis_checklists';
+const KEY_PROPS          = 'sis_propostas';
+const KEY_DIR_APPROVERS  = 'sis_dir_approvers';
+
+/* ======= Cliente da API (Drive) ======= */
+async function driveGet(docId){
+  const url = `${SIS_API_URL}?docId=${encodeURIComponent(docId)}`;
+  const r = await fetch(url, { method:'GET' });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j = await r.json();
+  if(!j.ok) throw new Error(j.error||'Erro GET');
+  return j.data || {};
+}
+async function drivePost(docId, data){
+  const r = await fetch(SIS_API_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({ docId, data })
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  const j = await r.json();
+  if(!j.ok) throw new Error(j.error||'Erro POST');
+  return true;
+}
+
+/* ======= Sincronização ======= */
+/* Nuvem -> Navegador */
+async function syncPullDrive(){
+  try{
+    const [u,d,p,a] = await Promise.all([
+      driveGet(CLOUD_DOCS.users),
+      driveGet(CLOUD_DOCS.checklists),
+      driveGet(CLOUD_DOCS.propostas),
+      driveGet(CLOUD_DOCS.approvers),
+    ]);
+    if(Object.keys(u).length) localStorage.setItem(KEY_USERS, JSON.stringify(u));
+    if(Object.keys(d).length) localStorage.setItem(KEY_DATA,  JSON.stringify(d));
+    if(Array.isArray(p))      localStorage.setItem(KEY_PROPS, JSON.stringify(p));
+    if(Array.isArray(a))      localStorage.setItem(KEY_DIR_APPROVERS, JSON.stringify(a));
+    alert('✅ Puxado do Drive com sucesso!');
+    if(typeof initUI==='function') initUI();
+  }catch(e){
+    console.error(e);
+    alert('❌ Erro ao puxar do Drive: ' + e.message);
+  }
+}
+
+/* Navegador -> Nuvem */
+async function syncPushDrive(){
+  try{
+    const u = JSON.parse(localStorage.getItem(KEY_USERS)         || '[]'  );
+    const d = JSON.parse(localStorage.getItem(KEY_DATA)          || '{}'  );
+    const p = JSON.parse(localStorage.getItem(KEY_PROPS)         || '[]'  );
+    const a = JSON.parse(localStorage.getItem(KEY_DIR_APPROVERS) || '[]'  );
+    await Promise.all([
+      drivePost(CLOUD_DOCS.users,      u),
+      drivePost(CLOUD_DOCS.checklists, d),
+      drivePost(CLOUD_DOCS.propostas,  p),
+      drivePost(CLOUD_DOCS.approvers,  a),
+    ]);
+    alert('✅ Enviado ao Drive com sucesso!');
+  }catch(e){
+    console.error(e);
+    alert('❌ Erro ao enviar ao Drive: ' + e.message);
+  }
+}
+
+/* ======= Botões de Sync só para ADMIN (aparece no topo) ======= */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const nav = document.getElementById('userNav');
+  if(!nav) return; // seu topo ainda não montou? sem problemas.
+
+  const btnWrap = document.createElement('div');
+  btnWrap.className = 'row';
+  btnWrap.style.marginLeft = '8px';
+  btnWrap.innerHTML = `
+    <button class="btn ghost" id="btnPull">Puxar do Drive</button>
+    <button class="btn ghost" id="btnPush">Enviar p/ Drive</button>
+  `;
+  nav.appendChild(btnWrap);
+
+  const isAdmin = ()=>{
+    try{
+      const u = JSON.parse(localStorage.getItem(KEY_SESSION)||'null');
+      return u && u.role === 'ADMIN';
+    }catch{ return false; }
+  };
+
+  document.getElementById('btnPull').onclick = ()=>{
+    if(!isAdmin()) return alert('Somente ADMIN pode sincronizar.');
+    syncPullDrive();
+  };
+  document.getElementById('btnPush').onclick = ()=>{
+    if(!isAdmin()) return alert('Somente ADMIN pode sincronizar.');
+    syncPushDrive();
+  };
+});
+</script>
+
+</body>
+</html>
